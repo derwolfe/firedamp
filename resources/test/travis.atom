@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xml:lang="en-US" xmlns="http://www.w3.org/2005/Atom">
+  <id>tag:www.traviscistatus.com,2005:/history</id>
+  <link rel="alternate" type="text/html" href="https://www.traviscistatus.com"/>
+  <link rel="self" type="application/atom+xml" href="https://www.traviscistatus.com/history.atom"/>
+  <title>Travis CI Status - Incident History</title>
+  <updated>2016-07-01T19:18:37Z</updated>
+  <author>
+    <name>Travis CI</name>
+  </author>
+  <entry>
+    <id>tag:www.traviscistatus.com,2005:Incident/545415</id>
+    <published>2016-06-30T21:19:48Z</published>
+    <updated>2016-06-30T21:19:48Z</updated>
+    <link rel="alternate" type="text/html" href="https://www.traviscistatus.com/incidents/rqb906yypnk0"/>
+    <title>All OS X builds delayed</title>
+    <content type="html">&lt;p&gt;&lt;small&gt;Jun 30, 21:19 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Resolved&lt;/strong&gt; - Mac builds are being processed normally.&lt;/p&gt;&lt;p&gt;&lt;small&gt;Jun 30, 16:10 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Update&lt;/strong&gt; - After canceling older jobs, .org Mac build queue still has a sizable back log, resulting in noticeable delay.&lt;/p&gt;&lt;p&gt;&lt;small&gt;Jun 30, 14:45 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Update&lt;/strong&gt; - We are starting to cancel older outstanding Mac builds on .org&lt;/p&gt;&lt;p&gt;&lt;small&gt;Jun 30, 13:32 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Update&lt;/strong&gt; - Private builds on the Mac are being processed normally.&lt;/p&gt;&lt;p&gt;&lt;small&gt;Jun 30, 12:29 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Update&lt;/strong&gt; - We still have a substantial back log on the public Mac build queue before the busiest time of the day. We will cancel queued jobs starting around 10:00 EDT (14:00 UTC, 16:00 CEST, 07:00 PDT).&lt;/p&gt;&lt;p&gt;&lt;small&gt;Jun 29, 21:45 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Monitoring&lt;/strong&gt; - Backlog is being processed on both sites. We'll continue to make updates as things progress.&lt;/p&gt;&lt;p&gt;&lt;small&gt;Jun 29, 20:39 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Update&lt;/strong&gt; - We are continuiing to process the backlog on both sites, so delays will continue. We'll post updates as we begin to catch up on the backlog&lt;/p&gt;&lt;p&gt;&lt;small&gt;Jun 29, 18:46 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Update&lt;/strong&gt; - We're beginning to process builds for both travis-ci.org and travis-ci.com and we are monitoring things closely. We'll provide another update in 60 minutes or if we have an update sooner.&lt;/p&gt;&lt;p&gt;&lt;small&gt;Jun 29, 18:23 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Update&lt;/strong&gt; - We've been able to stabilize and repair the core virtualization layer and after some testing in staging, we're beginning to ramp up capacity to start processing jobs, but with partial capacity at first. We'll provide another update in 60 minutes or if we have an update sooner.&lt;/p&gt;&lt;p&gt;&lt;small&gt;Jun 29, 18:00 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Update&lt;/strong&gt; - We're working in our infrastructure provider and vendor support on getting our core virtualization layer back into service and we hope to have start processing builds again within the next 60-90 minutes. We'll provide another update in 60 minutes or if we have an update sooner.&lt;/p&gt;&lt;p&gt;&lt;small&gt;Jun 29, 17:04 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Update&lt;/strong&gt; - We're working in our infrastructure provider and vendor support on rissues with our core virtualization layer. We'll provide another update in 60 minutes or if we have an update sooner.&lt;/p&gt;&lt;p&gt;&lt;small&gt;Jun 29, 16:20 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Update&lt;/strong&gt; - At this time there's no change in the state of things. All of our OSX builds are currently paused due to issues with our core virtualization layer and we're working in our infrastructure provider and vendor support on recovering things. We'll provide another update in 60 minutes or if we have an update sooner.&lt;/p&gt;&lt;p&gt;&lt;small&gt;Jun 29, 15:14 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Update&lt;/strong&gt; - We apologize for the continued delays. All of our OSX builds are currently paused due to issues with our core virtualization layer and we're working in our infrastructure provider and vendor support on recovering things. We'll provide another update in 60 minutes or if we have an update sooner.&lt;/p&gt;&lt;p&gt;&lt;small&gt;Jun 29, 14:04 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Update&lt;/strong&gt; - We're going to temporarily pause all OS X related build processing&lt;/p&gt;&lt;p&gt;&lt;small&gt;Jun 29, 13:55 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Update&lt;/strong&gt; - In order to work to stabilize some internal load in our vSphere cluster and get back to full capacity, we're going to be throttling builds for a few minutes and this will increase build delays temporarily.&lt;/p&gt;&lt;p&gt;&lt;small&gt;Jun 29, 13:00 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Identified&lt;/strong&gt; - We're currently running with reduced capacity for our OSX builders, due to some hosts having hardware issues. We're working with our infrastructure provider to determine why and resolve the issue&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>tag:www.traviscistatus.com,2005:Incident/543971</id>
+    <published>2016-06-30T10:47:04Z</published>
+    <updated>2016-06-30T10:47:05Z</updated>
+    <link rel="alternate" type="text/html" href="https://www.traviscistatus.com/incidents/m80nxj972zn5"/>
+    <title>Network maintenance on Mac infrastructure</title>
+    <content type="html">&lt;p&gt;&lt;small&gt;Jun 30, 10:47 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Completed&lt;/strong&gt; - The network maintenance is completed.&lt;/p&gt;&lt;p&gt;&lt;small&gt;Jun 30, 10:00 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;In progress&lt;/strong&gt; - Our Mac infrastructure provider is performing network maintenance in order to increase the capacity and efficiency of the network. We're expecting several momentary network interruptions during the maintenance, which might cause delays in builds starting, or possibly false errors in builds at points where the build depends on external network access.&lt;/p&gt;&lt;p&gt;&lt;small&gt;Jun 28, 02:08 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Scheduled&lt;/strong&gt; - Our Mac infrastructure provider will be performing maintenance on June 30th from 10:00 UTC to 10:45 UTC. We're expecting some build requeues during this window as the upstream network connection will be unavailable for short periods of time.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>tag:www.traviscistatus.com,2005:Incident/543227</id>
+    <published>2016-06-27T12:07:11Z</published>
+    <updated>2016-06-27T12:07:12Z</updated>
+    <link rel="alternate" type="text/html" href="https://www.traviscistatus.com/incidents/lpd5d1gl62jp"/>
+    <title>Maintenance on Mac infrastructure causing delayed builds</title>
+    <content type="html">&lt;p&gt;&lt;small&gt;Jun 27, 12:07 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Resolved&lt;/strong&gt; - The backlog has cleared and Mac OS X builds are running as expected. Thank you!&lt;/p&gt;&lt;p&gt;&lt;small&gt;Jun 27, 10:54 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Monitoring&lt;/strong&gt; - The maintenance has been completed. Builds are processing normally. We are closely monitoring the situation as we work through the backlog.&lt;/p&gt;&lt;p&gt;&lt;small&gt;Jun 27, 10:43 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Identified&lt;/strong&gt; - Our Mac infrastructure provider is performing maintenance, which is causing some delayed Mac builds.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>tag:www.traviscistatus.com,2005:Incident/538255</id>
+    <published>2016-06-23T04:04:24Z</published>
+    <updated>2016-06-23T04:05:09Z</updated>
+    <link rel="alternate" type="text/html" href="https://www.traviscistatus.com/incidents/nf3tg08pqg2d"/>
+    <title>Increased boot times on Mac infrastructure</title>
+    <content type="html">&lt;p&gt;&lt;small&gt;Jun 23, 04:04 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Resolved&lt;/strong&gt; - We managed to process all the remaining queued builds for public repositories on our Mac infrastructure. Thank you for your enduring patience.&lt;/p&gt;&lt;p&gt;&lt;small&gt;Jun 22, 07:21 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Update&lt;/strong&gt; - Just about all of the closed source jobs which were in the job backlog have processed. Open source jobs are still backed up, but processing normally.&lt;/p&gt;&lt;p&gt;&lt;small&gt;Jun 22, 05:55 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Monitoring&lt;/strong&gt; - We've restarted all of our workers and the queue is draining as it is expected to do so. We're monitoring things closely as jobs process.&lt;/p&gt;&lt;p&gt;&lt;small&gt;Jun 22, 05:29 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Update&lt;/strong&gt; - All the stale VMs have cleared! We'll be restarting workers momentarily.&lt;/p&gt;&lt;p&gt;&lt;small&gt;Jun 22, 04:43 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Update&lt;/strong&gt; - We've coordinated with our infrastructure provider to restart our vCenter instance, which had become unresponsive, and it has come back up. We're actively working to continue cleaning up the stale VMs.&lt;/p&gt;&lt;p&gt;&lt;small&gt;Jun 22, 03:22 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Update&lt;/strong&gt; - We're still working on cleaning up the stale VMs. At this time we have stopped all Mac workers in order to help the cleanup go faster.&lt;/p&gt;&lt;p&gt;&lt;small&gt;Jun 22, 00:45 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Identified&lt;/strong&gt; - We're working on cleaning up some stale VMs on our Mac infrastructure, you may experience increased boot times for the time being.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>tag:www.traviscistatus.com,2005:Incident/533349</id>
+    <published>2016-06-16T23:20:08Z</published>
+    <updated>2016-06-16T23:20:08Z</updated>
+    <link rel="alternate" type="text/html" href="https://www.traviscistatus.com/incidents/nly2x42p17gl"/>
+    <title>Issues with some restarts of travis-ci.com builds</title>
+    <content type="html">&lt;p&gt;&lt;small&gt;Jun 16, 23:20 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Resolved&lt;/strong&gt; - At this time things are operating as expected.&lt;/p&gt;&lt;p&gt;&lt;small&gt;Jun 16, 21:57 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Identified&lt;/strong&gt; - We've identified a service which helps handle the restarts, that was not running correctly and we've implemented a fix. We're starting to process delayed requests and are increasing some capacity to handle the backlog.&lt;/p&gt;&lt;p&gt;&lt;small&gt;Jun 16, 20:15 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Investigating&lt;/strong&gt; - We are investigating reports of sssues with some restarts of travis-ci.com builds&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>tag:www.traviscistatus.com,2005:Incident/525053</id>
+    <published>2016-06-07T17:22:02Z</published>
+    <updated>2016-06-07T17:22:03Z</updated>
+    <link rel="alternate" type="text/html" href="https://www.traviscistatus.com/incidents/31gtfgljkv2d"/>
+    <title>Build delays for sudo: required builds on both travis-ci.org and travis-ci.com</title>
+    <content type="html">&lt;p&gt;&lt;small&gt;Jun  7, 17:22 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Resolved&lt;/strong&gt; - This has been resolved and all affected builds should have started now.  Please drop us a line at support@travis-ci.com for any further questions. Thanks for your patience!&lt;/p&gt;&lt;p&gt;&lt;small&gt;Jun  7, 17:03 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Monitoring&lt;/strong&gt; - A fix has been implemented and we are monitoring the results.&lt;/p&gt;&lt;p&gt;&lt;small&gt;Jun  7, 16:58 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Update&lt;/strong&gt; - We've deployed a fix for this issue and we are currently working through the backlog.&lt;/p&gt;&lt;p&gt;&lt;small&gt;Jun  7, 16:20 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Identified&lt;/strong&gt; - We've identified the source of the delays as part of very recent improvements to restart jobs. We're working on a fix now.&lt;/p&gt;&lt;p&gt;&lt;small&gt;Jun  7, 15:23 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Investigating&lt;/strong&gt; - We are investigating build delays on the GCE infrastructure.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>tag:www.traviscistatus.com,2005:Incident/521221</id>
+    <published>2016-06-02T12:29:08Z</published>
+    <updated>2016-06-02T12:29:10Z</updated>
+    <link rel="alternate" type="text/html" href="https://www.traviscistatus.com/incidents/y4cgpc693q01"/>
+    <title>Increased response times for web endpoints</title>
+    <content type="html">&lt;p&gt;&lt;small&gt;Jun  2, 12:29 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Resolved&lt;/strong&gt; - The upstream issue is reported to be resolved, and response times are back to normal.&lt;/p&gt;&lt;p&gt;&lt;small&gt;Jun  2, 12:13 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Identified&lt;/strong&gt; - One of our upstream providers is investigating network instability causing slow response times on our website and API.&lt;/p&gt;&lt;p&gt;&lt;small&gt;Jun  2, 12:04 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Investigating&lt;/strong&gt; - We're investigating reports of increased response times on our web endpoints (the API and the travis-ci.org/travis-ci.com website).&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>tag:www.traviscistatus.com,2005:Incident/520415</id>
+    <published>2016-06-01T17:01:00Z</published>
+    <updated>2016-06-01T17:02:39Z</updated>
+    <link rel="alternate" type="text/html" href="https://www.traviscistatus.com/incidents/s0v8646mhmtz"/>
+    <title>GCE platform job requeues causing build delays</title>
+    <content type="html">&lt;p&gt;&lt;small&gt;Jun  1, 17:01 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Resolved&lt;/strong&gt; - The backlog has cleared. Jobs are now processing normally. Sorry for the interruption! 🙂&lt;/p&gt;&lt;p&gt;&lt;small&gt;Jun  1, 16:28 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Monitoring&lt;/strong&gt; - The requeue event has been resolved. We are working through the backlog and will provide an update once it has been cleared.&lt;/p&gt;&lt;p&gt;&lt;small&gt;Jun  1, 15:37 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Identified&lt;/strong&gt; - Due to leaking resources some users may experience their jobs being requeued on the GCE platform.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>tag:www.traviscistatus.com,2005:Incident/516694</id>
+    <published>2016-05-29T13:07:44Z</published>
+    <updated>2016-05-29T13:07:44Z</updated>
+    <link rel="alternate" type="text/html" href="https://www.traviscistatus.com/incidents/wwcfkg02fzj5"/>
+    <title>Database Maintenance for travis-ci.com and travis-ci.org on Sun, May 29th 12:00 - 16:00 UTC</title>
+    <content type="html">&lt;p&gt;&lt;small&gt;May 29, 13:07 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Completed&lt;/strong&gt; - Database maintenance was successful, everything should be up and running again.&lt;/p&gt;&lt;p&gt;&lt;small&gt;May 29, 12:36 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Update&lt;/strong&gt; - Maintenance ran successfully on travis-ci.org, which is back up and running. Putting travis-ci.com into maintenance mode.&lt;/p&gt;&lt;p&gt;&lt;small&gt;May 29, 12:00 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;In progress&lt;/strong&gt; - Scheduled maintenance is currently in progress. We will provide updates as necessary.&lt;/p&gt;&lt;p&gt;&lt;small&gt;May 26, 18:02 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Scheduled&lt;/strong&gt; - We will be performing database maintenance that's required by our Infrastructure Provider. This Database Maintenance is for both travis-ci.com and travis-ci.org and is schedule for Sunday, May 29th 12:00 - 16:00 UTC
+&lt;br /&gt;
+&lt;br /&gt;During this time, we'll be stopping certain parts of the Travis CI backends, which will result in jobs being paused. Our API and web interface will also be temporarily unavailable. You'll see a maintenance page on the web interface.
+&lt;br /&gt;
+&lt;br /&gt;We *will not* lose any existing queued jobs, nor will we lose any incoming web hook events. They will both be queued until we return those parts of this system to full functionality.
+&lt;br /&gt;
+&lt;br /&gt;We do not expect the time things are paused to take more than 30 minutes for each site, but are scheduling sufficient time to handle any unanticipated things which may come up.
+&lt;br /&gt;
+&lt;br /&gt;Please email support@travis-ci.com if you have any questions or concerns.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>tag:www.traviscistatus.com,2005:Incident/513812</id>
+    <published>2016-05-23T21:00:49Z</published>
+    <updated>2016-05-23T21:00:49Z</updated>
+    <link rel="alternate" type="text/html" href="https://www.traviscistatus.com/incidents/rcz2yt4yswl7"/>
+    <title>Github issues resulting in surge of builds and build delays</title>
+    <content type="html">&lt;p&gt;&lt;small&gt;May 23, 21:00 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Resolved&lt;/strong&gt; - At this time all systems are operating as expected. If you see any issues, please email support@travis-ci.com&lt;/p&gt;&lt;p&gt;&lt;small&gt;May 23, 18:38 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Monitoring&lt;/strong&gt; - We've cleared most of the additional load generated by this event and our monitoring things closely.&lt;/p&gt;&lt;p&gt;&lt;small&gt;May 23, 17:53 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Identified&lt;/strong&gt; - The ongoing issues/delays with Github webhooks, https://twitter.com/githubstatus/status/734789351754846209, is resulting in us getting a large surge in builds. We're scaling up accordingly but there will some build delays as we bring more capacity online.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>tag:www.traviscistatus.com,2005:Incident/505634</id>
+    <published>2016-05-16T16:08:38Z</published>
+    <updated>2016-05-16T16:08:38Z</updated>
+    <link rel="alternate" type="text/html" href="https://www.traviscistatus.com/incidents/9p7b7vcbbh3x"/>
+    <title>Delays in all private travis-ci.com builds running</title>
+    <content type="html">&lt;p&gt;&lt;small&gt;May 16, 16:08 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Resolved&lt;/strong&gt; - We've now processed all the build jobs that were in the backlog because of this issue and things are operating as expected. Thank you for your understanding.&lt;/p&gt;&lt;p&gt;&lt;small&gt;May 16, 15:00 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Identified&lt;/strong&gt; - We've identified a configuration change in our scheduling service which was resulting in new jobs not being queued, We've fixed the configuration and are now beginning to queue jobs as expected. There will be some delay as we catch up on the backlog of jobs. We'll post updates as we work through the backlog.&lt;/p&gt;&lt;p&gt;&lt;small&gt;May 16, 14:50 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Investigating&lt;/strong&gt; - We're seeing delays in the backend service which is responsible for scheduling new jobs and are investigating why.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>tag:www.traviscistatus.com,2005:Incident/502989</id>
+    <published>2016-05-13T08:37:26Z</published>
+    <updated>2016-05-13T08:37:26Z</updated>
+    <link rel="alternate" type="text/html" href="https://www.traviscistatus.com/incidents/whpdrnsw0722"/>
+    <title>Delayed build processing</title>
+    <content type="html">&lt;p&gt;&lt;small&gt;May 13, 08:37 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Resolved&lt;/strong&gt; - This issue has been resolved, and we've worked through the backlog.&lt;/p&gt;&lt;p&gt;&lt;small&gt;May 13, 07:50 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Identified&lt;/strong&gt; - We’ve identified two issues affecting database performance. We’ve already fixed on of them, and builds are processing normally, working through the backlog, so there might still be increased wait times while we work through the backlog of builds. We’re working on resolving the second issue, which has had a non-critical impact on database load.&lt;/p&gt;&lt;p&gt;&lt;small&gt;May 13, 07:15 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Investigating&lt;/strong&gt; - We're seeing investigating performance in build request processing due to high database load on both platforms.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>tag:www.traviscistatus.com,2005:Incident/502270</id>
+    <published>2016-05-12T15:53:12Z</published>
+    <updated>2016-05-12T15:53:12Z</updated>
+    <link rel="alternate" type="text/html" href="https://www.traviscistatus.com/incidents/tcpqyl46z0y1"/>
+    <title>Delayed Builds on the Docker Build Infrastructure</title>
+    <content type="html">&lt;p&gt;&lt;small&gt;May 12, 15:53 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Resolved&lt;/strong&gt; - The queue has drained and we are processing jobs normally. Thank you for your patience.&lt;/p&gt;&lt;p&gt;&lt;small&gt;May 12, 15:05 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Monitoring&lt;/strong&gt; - We are normally processing jobs, but have a slight backlog on the Docker build infrastructure. We are monitoring the situation, and it should resolve soon.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>tag:www.traviscistatus.com,2005:Incident/501515</id>
+    <published>2016-05-11T22:25:38Z</published>
+    <updated>2016-05-11T22:25:38Z</updated>
+    <link rel="alternate" type="text/html" href="https://www.traviscistatus.com/incidents/9lrp240b8hb8"/>
+    <title>Outbound Connectivity for OS X Build Infrastructure</title>
+    <content type="html">&lt;p&gt;&lt;small&gt;May 11, 22:25 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Resolved&lt;/strong&gt; - We have resolved a misconfigured firewall on the OS X build infrastructure. If you are seeing network-based build failures, please restart your builds. Sorry for the inconvenience, and happy building.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>tag:www.traviscistatus.com,2005:Incident/500080</id>
+    <published>2016-05-10T23:17:22Z</published>
+    <updated>2016-05-10T23:17:22Z</updated>
+    <link rel="alternate" type="text/html" href="https://www.traviscistatus.com/incidents/zkyh5081xkrg"/>
+    <title>Internet connectivity issues in our OS X environment</title>
+    <content type="html">&lt;p&gt;&lt;small&gt;May 10, 23:17 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Resolved&lt;/strong&gt; - This incident has been resolved.&lt;/p&gt;&lt;p&gt;&lt;small&gt;May 10, 21:01 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Monitoring&lt;/strong&gt; - We've confirmed that OS X builds continue to run as expected and the inbound access issues are not affecting builds.&lt;/p&gt;&lt;p&gt;&lt;small&gt;May 10, 20:43 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Update&lt;/strong&gt; - Upon further investigation, connectivity may only be affecting certain *in-bound* traffic and outbound connectivity for our OSX builds should not be impacted. We'll provide another update shortly&lt;/p&gt;&lt;p&gt;&lt;small&gt;May 10, 20:35 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Investigating&lt;/strong&gt; - We are investigating internet connectivity issues in our OS X environment&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>tag:www.traviscistatus.com,2005:Incident/495325</id>
+    <published>2016-05-06T18:49:25Z</published>
+    <updated>2016-05-06T18:49:26Z</updated>
+    <link rel="alternate" type="text/html" href="https://www.traviscistatus.com/incidents/bd4f57n9ggz9"/>
+    <title>Investigating issues with public and private OSX builds</title>
+    <content type="html">&lt;p&gt;&lt;small&gt;May  6, 18:49 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Resolved&lt;/strong&gt; - This incident has been resolved.&lt;/p&gt;&lt;p&gt;&lt;small&gt;May  6, 18:49 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Update&lt;/strong&gt; - At this time we've caught up on the public OSX build backlog and things are operating as expected.&lt;/p&gt;&lt;p&gt;&lt;small&gt;May  6, 18:12 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Monitoring&lt;/strong&gt; - We've caught up on our backlog for private OSX builds. We expect to to catch up on the public OSX build backlog within two hours or so and will provide an update when we do.&lt;/p&gt;&lt;p&gt;&lt;small&gt;May  6, 16:17 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Update&lt;/strong&gt; - We're still working through the backlog for both public and private builds and will post updates as soon as this starts to clear up.&lt;/p&gt;&lt;p&gt;&lt;small&gt;May  6, 14:37 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Update&lt;/strong&gt; - We've resumed all builds, we currently have large backlogs for both public and private builds. We'll provide updates as we get a better idea of how long the backlog will last.&lt;/p&gt;&lt;p&gt;&lt;small&gt;May  6, 14:30 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Update&lt;/strong&gt; - We've been able to resolve the underlying issues and are working to restore build services&lt;/p&gt;&lt;p&gt;&lt;small&gt;May  6, 14:17 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Update&lt;/strong&gt; - We are continuing to troubleshoot issues in the underlying infrastructure.&lt;/p&gt;&lt;p&gt;&lt;small&gt;May  6, 13:47 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Identified&lt;/strong&gt; - We are working with our infrastructure provider to restart some underlying services and will provide another update shortly&lt;/p&gt;&lt;p&gt;&lt;small&gt;May  6, 13:03 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Update&lt;/strong&gt; - All OSX builds are paused as we look into this issue&lt;/p&gt;&lt;p&gt;&lt;small&gt;May  6, 12:58 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Investigating&lt;/strong&gt; - We are currently investigating this issue.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>tag:www.traviscistatus.com,2005:Incident/494291</id>
+    <published>2016-05-05T21:01:16Z</published>
+    <updated>2016-05-05T21:01:17Z</updated>
+    <link rel="alternate" type="text/html" href="https://www.traviscistatus.com/incidents/j9wf8zpm3p3m"/>
+    <title>Build delays for public and private sudo enabled builds</title>
+    <content type="html">&lt;p&gt;&lt;small&gt;May  5, 21:01 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Resolved&lt;/strong&gt; - At 18:00 UTC we began seeing a spike in errors from the API used to create VMs for our sudo enabled builds. This resulted in unusually long delays in job start times and resulted in build cancellation delays as well. The API errors stopped at 18:15 UTC and build delays continued until approximately 18:35 UTC. If you have any further questions regarding this issue, please email support@travis-ci.com&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>tag:www.traviscistatus.com,2005:Incident/485172</id>
+    <published>2016-04-29T21:19:14Z</published>
+    <updated>2016-04-29T21:19:15Z</updated>
+    <link rel="alternate" type="text/html" href="https://www.traviscistatus.com/incidents/9wkz4f1ghgj9"/>
+    <title>OS X infrastructure issue</title>
+    <content type="html">&lt;p&gt;&lt;small&gt;Apr 29, 21:19 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Resolved&lt;/strong&gt; - This incident has been resolved.&lt;/p&gt;&lt;p&gt;&lt;small&gt;Apr 29, 20:29 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Monitoring&lt;/strong&gt; - We've resumed OS X jobs and we're monitoring the situation.&lt;/p&gt;&lt;p&gt;&lt;small&gt;Apr 29, 20:03 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Identified&lt;/strong&gt; - We've identified an issue with our OS X infrastructure causing degraded performance and we're temporarily holding any new builds from starting in the OS X queue until the issue is resolved.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>tag:www.traviscistatus.com,2005:Incident/473759</id>
+    <published>2016-04-22T05:12:57Z</published>
+    <updated>2016-04-22T05:12:58Z</updated>
+    <link rel="alternate" type="text/html" href="https://www.traviscistatus.com/incidents/mj352dhjmyhd"/>
+    <title>Inbound email support delays due to provider issues</title>
+    <content type="html">&lt;p&gt;&lt;small&gt;Apr 22, 05:12 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Resolved&lt;/strong&gt; - Service was restored and our support ticketing is working as expected.&lt;/p&gt;&lt;p&gt;&lt;small&gt;Apr 21, 22:38 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Monitoring&lt;/strong&gt; - There may be delays in support responses due to our ticketing system provider currently experiencing some inbound email service issues, http://status.helpscout.net/incidents/0qjmnv2vy7m1. 
+&lt;br /&gt;
+&lt;br /&gt;We'll provide an update when this has been resolved.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>tag:www.traviscistatus.com,2005:Incident/473505</id>
+    <published>2016-04-21T20:14:08Z</published>
+    <updated>2016-04-21T20:14:08Z</updated>
+    <link rel="alternate" type="text/html" href="https://www.traviscistatus.com/incidents/q0sz268nvwx6"/>
+    <title>Some build restarts for public sudo enabled builds</title>
+    <content type="html">&lt;p&gt;&lt;small&gt;Apr 21, 20:14 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Resolved&lt;/strong&gt; - We've finished deploying this configuration change and are monitoring things closely.&lt;/p&gt;&lt;p&gt;&lt;small&gt;Apr 21, 19:10 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Monitoring&lt;/strong&gt; - We're rolling out a change to the infrastructure for public sudo enabled builds, that will result in some build restarts, but will help fix the issues where builds are stopped while still showing a *passed* status.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>tag:www.traviscistatus.com,2005:Incident/466297</id>
+    <published>2016-04-13T23:52:22Z</published>
+    <updated>2016-04-13T23:52:23Z</updated>
+    <link rel="alternate" type="text/html" href="https://www.traviscistatus.com/incidents/8nwxtx4cyyr3"/>
+    <title>Mac build processing delay</title>
+    <content type="html">&lt;p&gt;&lt;small&gt;Apr 13, 23:52 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Resolved&lt;/strong&gt; - We have worked through the .org back log. Everything is operating normally.&lt;/p&gt;&lt;p&gt;&lt;small&gt;Apr 13, 23:20 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Monitoring&lt;/strong&gt; - Capacity is back normal. We have worked through .com back log. We continue to monitor .org back log.&lt;/p&gt;&lt;p&gt;&lt;small&gt;Apr 13, 23:19 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Identified&lt;/strong&gt; - The system issue has been identified. We are restarting VMs to restore capacity.&lt;/p&gt;&lt;p&gt;&lt;small&gt;Apr 13, 23:12 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Update&lt;/strong&gt; - We continue to investigate system level issues. All Mac builds are temporarily paused.&lt;/p&gt;&lt;p&gt;&lt;small&gt;Apr 13, 22:55 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Update&lt;/strong&gt; - .org builds are also affected.&lt;/p&gt;&lt;p&gt;&lt;small&gt;Apr 13, 22:48 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Investigating&lt;/strong&gt; - We are investigating build processing issue with private Mac builds&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>tag:www.traviscistatus.com,2005:Incident/457798</id>
+    <published>2016-04-05T23:35:57Z</published>
+    <updated>2016-04-05T23:35:57Z</updated>
+    <link rel="alternate" type="text/html" href="https://www.traviscistatus.com/incidents/gg94qtxblsqv"/>
+    <title>Github.com outage</title>
+    <content type="html">&lt;p&gt;&lt;small&gt;Apr  5, 23:35 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Resolved&lt;/strong&gt; - At this time we've caught up on all backlog and are processing builds as expected.&lt;/p&gt;&lt;p&gt;&lt;small&gt;Apr  5, 22:40 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Update&lt;/strong&gt; - We're processing backlogs on builds as Github is recovering and will update when all the backlogs have been cleared. Things are looking stable overall.&lt;/p&gt;&lt;p&gt;&lt;small&gt;Apr  5, 21:40 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Update&lt;/strong&gt; - Github is beginning to send us webhook events again and we're monitoring things closely as the build volume goes back up.&lt;/p&gt;&lt;p&gt;&lt;small&gt;Apr  5, 21:19 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Update&lt;/strong&gt; - Github is reporting improved performance. We are continuing to monitor things&lt;/p&gt;&lt;p&gt;&lt;small&gt;Apr  5, 20:57 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Monitoring&lt;/strong&gt; - Github is currently experiencing a site outage, https://twitter.com/githubstatus/status/717455416934981632. We are monitoring things closely.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>tag:www.traviscistatus.com,2005:Incident/457354</id>
+    <published>2016-04-05T11:57:35Z</published>
+    <updated>2016-04-05T11:57:36Z</updated>
+    <link rel="alternate" type="text/html" href="https://www.traviscistatus.com/incidents/qklxyf4tq9n4"/>
+    <title>GitHub Service Outage</title>
+    <content type="html">&lt;p&gt;&lt;small&gt;Apr  5, 11:57 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Resolved&lt;/strong&gt; - This incident has been resolved.&lt;/p&gt;&lt;p&gt;&lt;small&gt;Apr  5, 09:51 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Update&lt;/strong&gt; - Builds are now processing normally. We’ll continue monitoring systems closely.&lt;/p&gt;&lt;p&gt;&lt;small&gt;Apr  5, 09:19 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Monitoring&lt;/strong&gt; - We are processing builds at this time. We have some back logs on container builds on both public and private repositories.&lt;/p&gt;&lt;p&gt;&lt;small&gt;Apr  5, 08:59 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Identified&lt;/strong&gt; - Build processing has stalled on all build infrastructures due to GitHub service outage.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>tag:www.traviscistatus.com,2005:Incident/453411</id>
+    <published>2016-03-30T10:09:30Z</published>
+    <updated>2016-03-30T10:09:31Z</updated>
+    <link rel="alternate" type="text/html" href="https://www.traviscistatus.com/incidents/6hyjkwh8x35b"/>
+    <title>Brief routing issue for our OSX infrastructure's Internet transit</title>
+    <content type="html">&lt;p&gt;&lt;small&gt;Mar 30, 10:09 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Resolved&lt;/strong&gt; - We experienced a brief routing issue with our OSX's infrastructure Internet transit from 09:45 to 10:05 UTC. This resulted in some build restarts and some delayed builds. At this time things are operating as expected. If you see any issues with OS X builds, please email support@travis-ci.com&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>tag:www.traviscistatus.com,2005:Incident/448181</id>
+    <published>2016-03-23T13:48:24Z</published>
+    <updated>2016-03-23T13:48:25Z</updated>
+    <link rel="alternate" type="text/html" href="https://www.traviscistatus.com/incidents/xl7yxd9vsm9b"/>
+    <title>Build delays for public (travis-ci.org) Mac OS X builds</title>
+    <content type="html">&lt;p&gt;&lt;small&gt;Mar 23, 13:48 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Resolved&lt;/strong&gt; - The backlog has been cleared and builds are processing normally again. We'll continue to monitor systems closely over the next few hours. Thanks for your patience!&lt;/p&gt;&lt;p&gt;&lt;small&gt;Mar 23, 12:38 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Monitoring&lt;/strong&gt; - We've been able to return the workers to full capacity and are working on processing the accumulated backlog of .org OSX builds&lt;/p&gt;&lt;p&gt;&lt;small&gt;Mar 23, 12:02 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Update&lt;/strong&gt; - We’re still working to narrow down a root cause of the workers issues. We'll update you as soon as we figure out what's going on.&lt;/p&gt;&lt;p&gt;&lt;small&gt;Mar 23, 10:07 UTC&lt;/small&gt;&lt;br&gt;&lt;strong&gt;Identified&lt;/strong&gt; - We're having problems with Mac OS X workers, which decreased builds capacity. This in turn may lead to delays in starting builds. We're investigating a way to fix it.&lt;/p&gt;</content>
+  </entry>
+</feed>
