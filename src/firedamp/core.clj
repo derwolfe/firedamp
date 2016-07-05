@@ -19,7 +19,8 @@
 (def codecov "http://status.codecov.io/history.atom")
 (def travis "http://www.traviscistatus.com/history.atom")
 
-(def state (atom false))
+(def state (atom {:alarm-state false
+                  :last-update (time/now)}))
 
 (defn parse-status-page
   [feed threshold]
@@ -64,6 +65,7 @@
 
 (defn tweet
   [message]
+  (timbre/info "tweeting" message)
   (let [{:keys [api_key api_secret access_token access_secret]} env/env
         token (tw-auth/make-oauth-creds api_key
                                         api_secret
@@ -78,28 +80,29 @@
     (md/let-flow [co (fetch-statuspage codecov threshold-date)
                   tr (fetch-statuspage travis threshold-date)
                   gh (fetch-github-status)]
-                 (let [parsed-co (parse-status-page co threshold-date)
-                       parsed-tr (parse-status-page tr threshold-date)
-                       parsed-gh (parse-github gh)
-                       new-state (red-alert? parsed-gh parsed-co parsed-tr)
-                       old-state @state]
-                   (reset! state new-state)
-                   (cond
-                     (and (= new-state old-state) (not old-state))
-                     (timbre/info "still sunny")
+      (let [parsed-co (parse-status-page co threshold-date)
+            parsed-tr (parse-status-page tr threshold-date)
+            parsed-gh (parse-github gh)
+            new-state (red-alert? parsed-gh parsed-co parsed-tr)
+            old-state (:alarm-state @state)]
+        (cond
+          (and (= new-state old-state) (not old-state))
+          (timbre/info "still sunny")
 
-                     (and (= new-state old-state) old-state)
-                     (timbre/info "still dark")
+          (and (= new-state old-state) old-state)
+          (timbre/info "still dark")
 
-                     (and (not= new-state old-state) (not old-state))
-                     (do
-                       (timbre/info "sunny again")
-                       (tweet "sunny again"))
+          (and (not= new-state old-state) (not old-state))
+          (do
+            (timbre/info "sunny again")
+            (tweet "sunny again"))
 
-                     (and (not= new-state old-state) old-state)
-                     (do
-                       (timbre/info "problem time")
-                       (tweet "problems")))))))
+          (and (not= new-state old-state) old-state)
+          (do
+            (timbre/info "problem time")
+            (tweet "problems")))
+        (reset! state {:alarm-state state
+                       :last-update (time/now)})))))
 
 (defn keep-checking
   [period]
