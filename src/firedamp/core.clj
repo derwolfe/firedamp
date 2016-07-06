@@ -19,7 +19,7 @@
 (def codecov "http://status.codecov.io/history.atom")
 (def travis "http://www.traviscistatus.com/history.atom")
 
-(def state (atom {:alarm-state false
+(def state (atom {:alarm-state true
                   :last-update (time/now)}))
 
 (defn parse-status-page
@@ -46,7 +46,7 @@
      (timbre/info "got status page for" url)
      stream)))
 
-(defn fetch-github-status
+(defn fetch-github
   []
   (timbre/info "fetching github")
   (md/chain
@@ -54,7 +54,7 @@
    :body
    bs/to-reader
    (fn [s]
-     (timbre/info "got response from githb")
+     (timbre/info "got response from github")
      (json/parse-stream s true))))
 
 (defn red-alert?
@@ -70,21 +70,26 @@
         token (tw-auth/make-oauth-creds api_key
                                         api_secret
                                         access_token
-                                        access_secret)]
-    (tw-api/statuses-update :oauth-creds token
-                            :params {:status message})))
+                                        access_secret)
+        result (tw-api/statuses-update :oauth-creds token
+                                       :params {:status message})
+
+        ]
+    (prn result)
+    result))
 
 (defn ugoh
   [period]
   (let [threshold-date (time/minus (time/now) (time/seconds period))]
     (md/let-flow [co (fetch-statuspage codecov threshold-date)
                   tr (fetch-statuspage travis threshold-date)
-                  gh (fetch-github-status)]
+                  gh (fetch-github)]
       (let [parsed-co (parse-status-page co threshold-date)
             parsed-tr (parse-status-page tr threshold-date)
             parsed-gh (parse-github gh)
             new-state (red-alert? parsed-gh parsed-co parsed-tr)
             old-state (:alarm-state @state)]
+        (prn old-state new-state)
         (cond
           (and (= new-state old-state) (not old-state))
           (timbre/info "still sunny")
@@ -116,6 +121,5 @@
 
 (defn -main
   [& args]
-  ;; check for the last 6 hours
   (staying-alive)
-  (keep-checking (* 60 5)))
+  (keep-checking (* 60 2)))
