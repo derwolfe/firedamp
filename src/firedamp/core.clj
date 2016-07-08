@@ -69,14 +69,15 @@
 (defn real-tweet
   [message token]
   (timbre/info "tweeting" message)
-  (tw-api/statuses-update :oauth-creds token
-                          :params {:status message}))
+  (md/future
+    (tw-api/statuses-update :oauth-creds token
+                            :params {:status message})))
 
 (defn fake-tweet
   [message token]
   (timbre/info message token))
 
-(defn ugoh
+(defn alert
   [ctx period]
   (let [threshold-date (time/minus (time/now) (time/seconds period))
         {:keys [token alarm-state]} ctx]
@@ -86,7 +87,9 @@
       (let [parsed-co (parse-status-page co threshold-date)
             parsed-tr (parse-status-page tr threshold-date)
             parsed-gh (parse-github gh)
-            new-state (red-alert? parsed-gh parsed-co parsed-tr)]
+            new-state (red-alert? parsed-gh parsed-co parsed-tr)
+            ;;fixed (repaired? parsed-gh parsed-co)
+            ]
         (timbre/info "s0" alarm-state "s1" new-state)
         (cond
           (and (= new-state alarm-state) (not alarm-state))
@@ -98,12 +101,12 @@
           (and (not= new-state alarm-state) (not alarm-state))
           (do
             (timbre/info "problem time")
-            (fake-tweet "expect probkems" token))
+            (real-tweet "expect problems" token))
 
           (and (not= new-state alarm-state) alarm-state)
           (do
             (timbre/info "sunny again")
-            (fake-tweet "things are improving" token)))
+            (real-tweet "things are improving" token)))
 
         ;; return some new app state
         {:alarm-state new-state
@@ -112,7 +115,7 @@
 
 (defn reset-world
   [period]
-  (md/let-flow [new-state (ugoh @state period)]
+  (md/let-flow [new-state (alert @state period)]
     (reset! state new-state)))
 
 (defn keep-checking
