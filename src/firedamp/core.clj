@@ -15,14 +15,14 @@
    [twitter.api.restful :as tw-api]
    [twitter.callbacks.handlers :as tw-handlers])
   (:import
-   (twitter.callbacks.protocols AsyncSingleCallback))
+   (twitter.callbacks.protocols SyncSingleCallback))
   (:gen-class))
 
 (def github "https://status.github.com/api/status.json")
 (def codecov "http://status.codecov.io/history.atom")
 (def travis "http://www.traviscistatus.com/history.atom")
 
-(def state (atom {:alarm-state false
+(def state (atom {:alarm-state true
                   :last-update (time/now)}))
 
 (defn parse-status-page
@@ -66,25 +66,20 @@
             (= 0 (count codecov))
             (= "good" github))))
 
-(defn tweet
+(defn real-tweet
   [message token]
   (timbre/info "tweeting" message)
-  (let [on-body (fn [response]
-                  (timbre/info "tweet response"))
-        result
-        (tw-api/statuses-update :oauth-creds token
-                                :params {:status message}
-                                :callbacks (AsyncSingleCallback.
-                                            tw-handlers/response-return-body
-                                            tw-handlers/response-throw-error
-                                            tw-handlers/exception-rethrow))]
-    result))
+  (tw-api/statuses-update :oauth-creds token
+                          :params {:status message}))
+
+(defn fake-tweet
+  [message token]
+  (timbre/info message token))
 
 (defn ugoh
   [ctx period]
   (let [threshold-date (time/minus (time/now) (time/seconds period))
-        token (:token ctx)
-        old-state (:alarm-state ctx)]
+        {:keys [token alarm-state]} ctx]
     (md/let-flow [co (fetch-statuspage codecov threshold-date)
                   tr (fetch-statuspage travis threshold-date)
                   gh (fetch-github)]
@@ -92,28 +87,28 @@
             parsed-tr (parse-status-page tr threshold-date)
             parsed-gh (parse-github gh)
             new-state (red-alert? parsed-gh parsed-co parsed-tr)]
-        (timbre/info "s0" old-state "s1" new-state)
+        (timbre/info "s0" alarm-state "s1" new-state)
         (cond
-          (and (= new-state old-state) (not old-state))
+          (and (= new-state alarm-state) (not alarm-state))
           (timbre/info "still sunny")
 
-          (and (= new-state old-state) old-state)
+          (and (= new-state alarm-state) alarm-state)
           (timbre/info "still dark")
 
-          (and (not= new-state old-state) (not old-state))
+          (and (not= new-state alarm-state) (not alarm-state))
           (do
             (timbre/info "problem time")
-            (md/->deferred (tweet "expect problems" token))))
+            (fake-tweet "expect probkems" token))
 
-          (and (not= new-state old-state) old-state)
+          (and (not= new-state alarm-state) alarm-state)
           (do
             (timbre/info "sunny again")
-            (md/->deferred (tweet "things are improving" token)))
+            (fake-tweet "things are improving" token)))
 
-          ;; return some new app state
-          {:alarm-state state
-           :token token
-           :last-update (time/now)}))))
+        ;; return some new app state
+        {:alarm-state new-state
+         :token token
+         :last-update (time/now)}))))
 
 (defn reset-world
   [period]
@@ -142,6 +137,6 @@
 
 (defn -main
   [& args]
-  (swap! state conj (setup-twitter env/env))
   (staying-alive)
+  (swap! state conj {:token (setup-twitter env/env)})
   (keep-checking (* 60 2)))
