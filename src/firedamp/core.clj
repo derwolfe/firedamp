@@ -38,7 +38,7 @@
   [msg]
   (:status msg))
 
-(defn fetch-statuspage
+(defn fetch-statuspage!
   [url]
   (timbre/info "fetching" url)
   (md/chain
@@ -49,7 +49,7 @@
      (timbre/info "got status page for" url)
      stream)))
 
-(defn fetch-github
+(defn fetch-github!
   []
   (timbre/info "fetching github")
   (md/chain
@@ -67,9 +67,9 @@
    Returns a deferred that fire when parsing is finished."
   (let [threshold-date (time/minus (time/now) (time/seconds period))]
     ;; these should all be able to timeout and show as failures
-    (md/let-flow [co (fetch-statuspage codecov)
-                  tr (fetch-statuspage travis)
-                  gh (fetch-github)]
+    (md/let-flow [co (fetch-statuspage! codecov)
+                  tr (fetch-statuspage! travis)
+                  gh (fetch-github!)]
       (let [parsed-co (parse-status-page co threshold-date)
             parsed-tr (parse-status-page tr threshold-date)
             parsed-gh (parse-github gh)]
@@ -90,7 +90,6 @@
     (and (not= s1 s0) (not s0)) ::darkening
     (and (not= s1 s0) s0) ::brightening))
 
-
 (defn tweet!
   [message token]
   (timbre/info "tweeting" message)
@@ -105,15 +104,13 @@
     ::darkening (tweet! "expect problems" token)
     ::brightening (tweet! "repaired" token)))
 
-(defn alert
+(defn alert!
   [ctx parsed-statuses]
   (let [{:keys [alarm-state token]} ctx
         {:keys [codecov github travis]} parsed-statuses
         new-alarm-state (red-alert? github codecov travis)
         status (get-next-state alarm-state new-alarm-state)]
-
     (tweet-alert! token status)
-
     (-> ctx
         (assoc :alarm-state status)
         (assoc :last-update (time/now)))))
@@ -121,7 +118,7 @@
 (defn run-world!
   [period]
   (md/let-flow [statuses (get-parse-statuses! period)]
-    (reset! state (alert @state statuses))))
+    (reset! state (alert! @state statuses))))
 
 (defn keep-checking
   [period]

@@ -48,7 +48,7 @@
                      (swap! hits conj url)
                      {:body s})]
       (with-redefs [aleph.http/get fake-get]
-        (is (= stream-response (bs/to-string @(core/fetch-statuspage core/travis))))
+        (is (= stream-response (bs/to-string @(core/fetch-statuspage! core/travis))))
         (is (= [core/travis] @hits)))))
   (testing "fetches github")
   (let [stream-response (github-json "bad" (time/now))
@@ -59,7 +59,7 @@
                    (swap! hits conj url)
                    {:body s})]
     (with-redefs [aleph.http/get fake-get]
-      (is (= expected @(core/fetch-github)))
+      (is (= expected @(core/fetch-github!)))
       (is (= [core/github] @hits)))))
 
 (deftest get-next-state
@@ -80,8 +80,8 @@
                                :last-update travis-date-without-events}))
           fake-statuspage (fn [url] (return-status (feed-stream)))
           fake-now (fn [] travis-date-without-events)]
-      (with-redefs [firedamp.core/fetch-statuspage fake-statuspage
-                    firedamp.core/fetch-github fake-github
+      (with-redefs [firedamp.core/fetch-statuspage! fake-statuspage
+                    firedamp.core/fetch-github! fake-github
                     clj-time.core/now fake-now]
         (is (= {:codecov '() :travis '() :github "good"}
                @(core/get-parse-statuses! 30)))))))
