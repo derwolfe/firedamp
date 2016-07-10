@@ -10,23 +10,25 @@
    [manifold.deferred :as md]
    [manifold.stream :as ms]))
 
+;; the feed is from a specific date
+(def travis-date-without-events (time/date-time 2017 6 30 0 0 0))
+(def travis-date-with-events (time/date-time 2016 6 30 15 16 0))
+(def codecov-date-with-events (time/date-time 2016 6 30 15 16 0))
+
 ;; need tests for each success/failure case
 (deftest parse-status-tests
   (testing "reads codecov feed"
     (let [feed-stream (-> "test/codecov.atom"
                           io/resource
                           io/input-stream)
-          ;; as of this date, the atom feed contains only a single event
-          with-events (time/date-time 2016 6 30 15 16 0)
-          parsed (core/parse-status-page feed-stream with-events)]
+          parsed (core/parse-status-page feed-stream codecov-date-with-events)]
       (is (= 1 (count parsed)))))
   (testing "reads travis feed"
     (let [feed-stream (-> "test/travis.atom"
                           io/resource
                           io/input-stream)
           ;; as of this date, the atom feed contains only a single event
-          with-events (time/date-time 2016 6 30 15 16 0)
-          parsed (core/parse-status-page feed-stream with-events)]
+          parsed (core/parse-status-page feed-stream travis-date-with-events)]
       (is (= 1 (count parsed)))))
   (testing "parses github status"
     (let [bad {:status "bad"}
@@ -66,6 +68,35 @@
   (is (= :firedamp.core/darkening (core/get-next-state false true)))
   (is (= :firedamp.core/brightening (core/get-next-state true false))))
 
+(deftest get-parse-statuses!-tests
+  ;; parse and fetch are already independently tested
+  (testing "returns a deferred wrapping a map of statuses"
+    (let [return-status (fn [status] (md/success-deferred status))
+          feed-stream (fn [] (-> "test/codecov.atom"
+                                 io/resource
+                                 io/input-stream))
+          fake-github (fn [] (return-status
+                              {:status "good"
+                               :last-update travis-date-without-events}))
+          fake-statuspage (fn [url date] (return-status (feed-stream)))
+          fake-now (fn [] travis-date-without-events)]
+      (with-redefs [firedamp.core/fetch-statuspage fake-statuspage
+                    firedamp.core/fetch-github fake-github
+                    clj-time.core/now fake-now]
+        (is (= {:codecov '() :travis '() :github "good"}
+               @(core/get-parse-statuses! 30)))))))
+  ;; (testing "checks for events in period seconds past"
+  ;;   (let [return-status (fn [status] (md/sucess-deferred status))
+  ;;         feed-stream (-> "test/codecov.atom"
+  ;;                         io/resource
+  ;;                         io/input-stream)
+  ;;         fake-github #(return-status (github-json "good" (time/now)))
+  ;;         fake-status-page (fn [url date] (return-status feed-stream))]
+  ;;     (with-redefs [firedamp.core/fetch-statuspage fake-status-page]
+  ;;       (let [result (core/get-parse-statuses! 10)]
+  ;;         )))
+  ;; )
+
 ;; (deftest alert-tests
 ;;   (testing "alerts "
 ;;     (let [fake-tweet (fn [msg token] (md/success-deferred ::done))]
@@ -81,21 +112,7 @@
 ;;           (is alarm-state)
 ;;           (is (time/after? last-update (:last-update ctx)))
 ;;           (is (= token (:token ctx))))))))
-
 ;; (testing "alerts with github bad")
 ;; (testing "alerts with travis events")
 ;; (testing "says repaired when new event is a repair")))
-
-;; (defn tweet-tests
-;;   (testing "it tries to tweet"))
-
-;; (defn get-parse-statuses-tests
-;;   (testing "returns a deferred wrapping a map of statuses"
-;;     (let [;; this should be auto-generated
-;;           repair-status nil
-;;           return-status (fn [status] (md/sucess-deferred status))
-;;           fake-github-good #(return-status {"good"})
-;;           fake-github-bad #(return-status {"bad"})
-;;           fake-status-page-good (fn [url date] (return-status ))
-;;           fake-status-page-bad (fn [url date] (return-status ))
-;;           fake-tweet-api (fn [] (md/sucess-deferred ))]))
+;; (defn tweet-tests;;   (testing "it tries to tweet"))

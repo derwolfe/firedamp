@@ -79,9 +79,7 @@
       (let [parsed-co (parse-status-page co threshold-date)
             parsed-tr (parse-status-page tr threshold-date)
             parsed-gh (parse-github gh)]
-        {:codecov parsed-co
-         :github parsed-gh
-         :travis parsed-tr}))))
+        {:codecov parsed-co :travis parsed-tr :github parsed-gh}))))
 
 (defn red-alert?
   [github codecov travis]
@@ -118,7 +116,7 @@
         (assoc :alarm-state status)
         (assoc :last-update (time/now)))))
 
-(defn reset-world
+(defn run-world!
   [period]
   (md/let-flow [statuses (get-parse-statuses! period)]
     (reset! state (alert @state statuses))))
@@ -127,7 +125,7 @@
   [period]
   (mt/every
    (* 1000 period) ;; ms -> sec
-   (fn [] (reset-world period))))
+   (fn [] (run-world! period))))
 
 (defn ^:private staying-alive
   []
