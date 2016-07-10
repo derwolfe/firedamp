@@ -22,7 +22,7 @@
 (def codecov "http://status.codecov.io/history.atom")
 (def travis "http://www.traviscistatus.com/history.atom")
 
-(def state (atom {:alarm-state true
+(def state (atom {:alarm-state false ;; start off assuming it all works
                   :last-update (time/now)}))
 
 (defn parse-status-page
@@ -66,57 +66,59 @@
             (= 0 (count codecov))
             (= "good" github))))
 
-(defn real-tweet
+(defn tweet
   [message token]
   (timbre/info "tweeting" message)
   (md/future
     (tw-api/statuses-update :oauth-creds token
                             :params {:status message})))
 
-(defn fake-tweet
-  [message token]
-  (timbre/info message token))
-
-(defn alert
-  [ctx period]
-  (let [threshold-date (time/minus (time/now) (time/seconds period))
-        {:keys [token alarm-state]} ctx]
+(defn get-parse-statuses
+  [period]
+  "Fetch and parse the status messages for all of the providers.
+   Returns a deferred that fire when parsing is finished."
+  (let [threshold-date (time/minus (time/now) (time/seconds period))]
     (md/let-flow [co (fetch-statuspage codecov threshold-date)
                   tr (fetch-statuspage travis threshold-date)
                   gh (fetch-github)]
       (let [parsed-co (parse-status-page co threshold-date)
             parsed-tr (parse-status-page tr threshold-date)
-            parsed-gh (parse-github gh)
-            new-state (red-alert? parsed-gh parsed-co parsed-tr)
-            ;;fixed (repaired? parsed-gh parsed-co)
-            ]
-        (timbre/info "s0" alarm-state "s1" new-state)
-        (cond
-          (and (= new-state alarm-state) (not alarm-state))
-          (timbre/info "still sunny")
+            parsed-gh (parse-github gh)]
+        {:codecov parsed-co
+         :github parsed-gh
+         :travis parsed-tr}))))
 
-          (and (= new-state alarm-state) alarm-state)
-          (timbre/info "still dark")
+;; once repair is added this should be a state machine...
+(defn decide
+  [s0 s1]
+  (cond
+    (and (= s1 s0) (not s0)) ::sunny
+    (and (= s1 s0) s0) ::dark
+    (and (not= s1 s0) (not s0)) ::darkening
+    (and (not= s1 s0) s0) ::brightening))
 
-          (and (not= new-state alarm-state) (not alarm-state))
-          (do
-            (timbre/info "problem time")
-            (real-tweet "expect problems" token))
+(defn alert
+  [ctx parsed-statuses]
+  (let [{:keys [alarm-state token]} ctx
+        {:keys [codecov github travis]} parsed-statuses
+        new-alarm-state (red-alert? github codecov travis)
+        status (decide alarm-state new-alarm-state)]
 
-          (and (not= new-state alarm-state) alarm-state)
-          (do
-            (timbre/info "sunny again")
-            (real-tweet "things are improving" token)))
+    (timbre/info status)
+    (when (= status ::darkening)
+      (tweet "expect problems" token))
 
-        ;; return some new app state
-        {:alarm-state new-state
-         :token token
-         :last-update (time/now)}))))
+    (when (= status ::brightening)
+      (tweet "repaired" token))
+
+    (-> ctx
+        (assoc :alarm-state status)
+        (assoc :last-update (time/now)))))
 
 (defn reset-world
   [period]
-  (md/let-flow [new-state (alert @state period)]
-    (reset! state new-state)))
+  (md/let-flow [statuses (get-parse-statuses period)]
+    (reset! state (alert @state statuses))))
 
 (defn keep-checking
   [period]
@@ -136,7 +138,6 @@
                                         access-token
                                         access-token-secret)]
     token))
-
 
 (defn -main
   [& args]

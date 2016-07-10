@@ -23,6 +23,8 @@
             [lein-ancient "0.6.10"]
             [jonase/eastwood "0.2.3"]
             [lein-cloverage "1.0.7-SNAPSHOT"]]
+  :cljfmt {:indents {let-flow [[:inner 0]]
+                     catch [[:inner 0]]}}
   :main ^:skip-aot firedamp.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}})

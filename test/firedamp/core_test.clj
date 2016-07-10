@@ -59,3 +59,37 @@
     (with-redefs [aleph.http/get fake-get]
       (is (= expected @(core/fetch-github)))
       (is (= [core/github] @hits)))))
+
+(deftest alert-tests
+  (testing "alerts with codecov events"
+    (let [fake-tweet (fn [msg token] (md/success-deferred ::done))]
+      (with-redefs [firedamp.core/tweet fake-tweet]
+        (let [s {:codecov [::bad]
+                 :github "good"
+                 :travis []}
+              ctx {:token "12345"
+                   :last-update (time/now)
+                   :alarm-state false}
+              new-state (core/alert ctx s)
+              {:keys [alarm-state last-update token]} new-state]
+          (is alarm-state)
+          (is (time/after? last-update (:last-update ctx)))
+          (is (= token (:token ctx))))))))
+
+;; (testing "alerts with github bad")
+;; (testing "alerts with travis events")
+;; (testing "says repaired when new event is a repair")))
+
+;; (defn tweet-tests
+;;   (testing "it tries to tweet"))
+
+;; (defn get-parse-statuses-tests
+;;   (testing "returns a deferred wrapping a map of statuses"
+;;     (let [;; this should be auto-generated
+;;           repair-status nil
+;;           return-status (fn [status] (md/sucess-deferred status))
+;;           fake-github-good #(return-status {"good"})
+;;           fake-github-bad #(return-status {"bad"})
+;;           fake-status-page-good (fn [url date] (return-status ))
+;;           fake-status-page-bad (fn [url date] (return-status ))
+;;           fake-tweet-api (fn [] (md/sucess-deferred ))]))
