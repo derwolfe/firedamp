@@ -39,7 +39,7 @@
   (:status msg))
 
 (defn fetch-statuspage
-  [url threshold]
+  [url]
   (timbre/info "fetching" url)
   (md/chain
    (http/get url)
@@ -73,8 +73,8 @@
    Returns a deferred that fire when parsing is finished."
   (let [threshold-date (time/minus (time/now) (time/seconds period))]
     ;; these should all be able to timeout and show as failures
-    (md/let-flow [co (fetch-statuspage codecov threshold-date)
-                  tr (fetch-statuspage travis threshold-date)
+    (md/let-flow [co (fetch-statuspage codecov)
+                  tr (fetch-statuspage travis)
                   gh (fetch-github)]
       (let [parsed-co (parse-status-page co threshold-date)
             parsed-tr (parse-status-page tr threshold-date)
