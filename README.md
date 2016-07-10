@@ -1,36 +1,17 @@
 # firedamp
 
-FIXME: description
 
-## Installation
 
-Download from http://example.com/FIXME.
+A bot that reports on the status of github, travis, and codecov. If anyone of
+them is failing, then a tweet will be sent to
+[https://twitter.com/covgittrav](@covgittrav) stating that problems
+are imminent.
 
-## Usage
-
-FIXME: explanation
-
-    $ java -jar firedamp-0.1.0-standalone.jar [args]
-
-## Options
-
-FIXME: listing of options this app accepts.
-
-## Examples
-
-...
-
-### Bugs
-
-...
-
-### Any Other Sections
-### That You Think
-### Might be Useful
+At some point int this will learn how to show when problems have been repaired.
 
 ## License
 
-Copyright © 2016 FIXME
+Copyright © Chris Wolfe
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.
