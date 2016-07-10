@@ -60,24 +60,19 @@
      (timbre/info "got response from github")
      (json/parse-stream s true))))
 
-(defn red-alert?
-  [github codecov travis]
-  (not (and (= 0 (count travis))
-            (= 0 (count codecov))
-            (= "good" github))))
-
-(defn tweet
+(defn tweet!
   [message token]
   (timbre/info "tweeting" message)
   (md/future
     (tw-api/statuses-update :oauth-creds token
                             :params {:status message})))
 
-(defn get-parse-statuses
+(defn get-parse-statuses!
   [period]
   "Fetch and parse the status messages for all of the providers.
    Returns a deferred that fire when parsing is finished."
   (let [threshold-date (time/minus (time/now) (time/seconds period))]
+    ;; these should all be able to timeout and show as failures
     (md/let-flow [co (fetch-statuspage codecov threshold-date)
                   tr (fetch-statuspage travis threshold-date)
                   gh (fetch-github)]
@@ -88,6 +83,12 @@
          :github parsed-gh
          :travis parsed-tr}))))
 
+(defn red-alert?
+  [github codecov travis]
+  (not (and (= 0 (count travis))
+            (= 0 (count codecov))
+            (= "good" github))))
+
 ;; once repair is added this should be a state machine...
 (defn get-next-state
   [s0 s1]
@@ -97,6 +98,13 @@
     (and (not= s1 s0) (not s0)) ::darkening
     (and (not= s1 s0) s0) ::brightening))
 
+(defn tweet-alert!
+  [token status]
+  (timbre/info status)
+  (condp = status
+    ::darkening (tweet! "expect problems" token)
+    ::brightening (tweet! "repaired" token)))
+
 (defn alert
   [ctx parsed-statuses]
   (let [{:keys [alarm-state token]} ctx
@@ -104,12 +112,7 @@
         new-alarm-state (red-alert? github codecov travis)
         status (get-next-state alarm-state new-alarm-state)]
 
-    (timbre/info status)
-    (when (= status ::darkening)
-      (tweet "expect problems" token))
-
-    (when (= status ::brightening)
-      (tweet "repaired" token))
+    (tweet-alert! token status)
 
     (-> ctx
         (assoc :alarm-state status)
@@ -117,7 +120,7 @@
 
 (defn reset-world
   [period]
-  (md/let-flow [statuses (get-parse-statuses period)]
+  (md/let-flow [statuses (get-parse-statuses! period)]
     (reset! state (alert @state statuses))))
 
 (defn keep-checking

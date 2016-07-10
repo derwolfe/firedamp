@@ -60,29 +60,27 @@
       (is (= expected @(core/fetch-github)))
       (is (= [core/github] @hits)))))
 
-
 (deftest get-next-state
   (is (= :firedamp.core/sunny (core/get-next-state false false)))
   (is (= :firedamp.core/dark (core/get-next-state true true)))
   (is (= :firedamp.core/darkening (core/get-next-state false true)))
   (is (= :firedamp.core/brightening (core/get-next-state true false))))
 
-
-(deftest alert-tests
-  (testing "alerts with codecov events"
-    (let [fake-tweet (fn [msg token] (md/success-deferred ::done))]
-      (with-redefs [firedamp.core/tweet fake-tweet]
-        (let [s {:codecov [::bad]
-                 :github "good"
-                 :travis []}
-              ctx {:token "12345"
-                   :last-update (time/now)
-                   :alarm-state false}
-              new-state (core/alert ctx s)
-              {:keys [alarm-state last-update token]} new-state]
-          (is alarm-state)
-          (is (time/after? last-update (:last-update ctx)))
-          (is (= token (:token ctx))))))))
+;; (deftest alert-tests
+;;   (testing "alerts "
+;;     (let [fake-tweet (fn [msg token] (md/success-deferred ::done))]
+;;       (with-redefs [firedamp.core/tweet fake-tweet]
+;;         (let [s {:codecov [::bad]
+;;                  :github "good"
+;;                  :travis []}
+;;               ctx {:token "12345"
+;;                    :last-update (time/now)
+;;                    :alarm-state false}
+;;               new-state (core/alert ctx s)
+;;               {:keys [alarm-state last-update token]} new-state]
+;;           (is alarm-state)
+;;           (is (time/after? last-update (:last-update ctx)))
+;;           (is (= token (:token ctx))))))))
 
 ;; (testing "alerts with github bad")
 ;; (testing "alerts with travis events")
