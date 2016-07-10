@@ -60,7 +60,6 @@
      (timbre/info "got response from github")
      (json/parse-stream s true))))
 
-
 (defn get-parse-statuses!
   [period]
   "Fetch and parse the status messages for all of the providers.
@@ -93,6 +92,7 @@
 (defn tweet!
   [message token]
   (timbre/info "tweeting" message)
+  ;; XXX this might want a timeout value
   (md/future
     (tw-api/statuses-update :oauth-creds token
                             :params {:status message})))
@@ -104,12 +104,13 @@
     ::darkening (tweet! "expect problems" token)
     ::brightening (tweet! "repaired" token)))
 
+;; it seems odd that this controls tweeting.
 (defn alert!
   [ctx parsed-statuses]
-  (let [{:keys [alarm-state token]} ctx
+  (let [{s0 :alarm-state token :token} ctx
         {:keys [codecov github travis]} parsed-statuses
-        new-alarm-state (red-alert? github codecov travis)
-        status (get-next-state alarm-state new-alarm-state)]
+        s1 (red-alert? github codecov travis)
+        status (get-next-state s0 s1)]
     (tweet-alert! token status)
     (-> ctx
         (assoc :alarm-state status)
@@ -124,7 +125,7 @@
   [period]
   (mt/every
    (* 1000 period) ;; ms -> sec
-   (fn [] (run-world! period))))
+   #(run-world! period)))
 
 (defn ^:private staying-alive
   []
