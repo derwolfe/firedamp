@@ -89,7 +89,7 @@
          :travis parsed-tr}))))
 
 ;; once repair is added this should be a state machine...
-(defn decide
+(defn get-next-state
   [s0 s1]
   (cond
     (and (= s1 s0) (not s0)) ::sunny
@@ -102,7 +102,7 @@
   (let [{:keys [alarm-state token]} ctx
         {:keys [codecov github travis]} parsed-statuses
         new-alarm-state (red-alert? github codecov travis)
-        status (decide alarm-state new-alarm-state)]
+        status (get-next-state alarm-state new-alarm-state)]
 
     (timbre/info status)
     (when (= status ::darkening)

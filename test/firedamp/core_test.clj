@@ -60,6 +60,14 @@
       (is (= expected @(core/fetch-github)))
       (is (= [core/github] @hits)))))
 
+
+(deftest get-next-state
+  (is (= :firedamp.core/sunny (core/get-next-state false false)))
+  (is (= :firedamp.core/dark (core/get-next-state true true)))
+  (is (= :firedamp.core/darkening (core/get-next-state false true)))
+  (is (= :firedamp.core/brightening (core/get-next-state true false))))
+
+
 (deftest alert-tests
   (testing "alerts with codecov events"
     (let [fake-tweet (fn [msg token] (md/success-deferred ::done))]
