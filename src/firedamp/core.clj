@@ -60,7 +60,6 @@
      (timbre/info "got response from github")
      (json/parse-stream s true))))
 
-
 (defn get-parse-statuses!
   [period]
   "Fetch and parse the status messages for all of the providers.
