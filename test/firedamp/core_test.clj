@@ -78,7 +78,6 @@
           fake-github (fn [] (return-status
                               {:status "good"
                                :last-update travis-date-without-events}))
-
           fake-statuspage (fn [url] (return-status (feed-stream)))
           fake-now (fn [] travis-date-without-events)]
       (with-redefs [firedamp.core/fetch-statuspage fake-statuspage
@@ -86,9 +85,21 @@
                     clj-time.core/now fake-now]
         (is (= {:codecov '() :travis '() :github "good"}
                @(core/get-parse-statuses! 30)))))))
-  (testing "checks for events in period seconds past"
 
-    )
+(deftest tweet-alert!
+  (let [toot (atom {})
+        t "token"
+        fake-tweet (fn [message token]
+                     (reset! toot {:message message :token t}))]
+    (with-redefs [firedamp.core/tweet! fake-tweet]
+      (testing "tweets when problem"
+        (core/tweet-alert! t :firedamp.core/darkening)
+        (is (= "expect problems" (:message @toot)))
+        (is (= t (:token @toot))))
+      (testing "tweets when repaired"
+        (core/tweet-alert! t :firedamp.core/brightening)
+        (is (= "repaired" (:message @toot)))
+        (is (= t (:token @toot)))))))
 
 ;; (deftest alert-tests
 ;;   (testing "alerts "

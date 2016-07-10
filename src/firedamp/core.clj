@@ -60,12 +60,6 @@
      (timbre/info "got response from github")
      (json/parse-stream s true))))
 
-(defn tweet!
-  [message token]
-  (timbre/info "tweeting" message)
-  (md/future
-    (tw-api/statuses-update :oauth-creds token
-                            :params {:status message})))
 
 (defn get-parse-statuses!
   [period]
@@ -95,6 +89,14 @@
     (and (= s1 s0) s0) ::dark
     (and (not= s1 s0) (not s0)) ::darkening
     (and (not= s1 s0) s0) ::brightening))
+
+
+(defn tweet!
+  [message token]
+  (timbre/info "tweeting" message)
+  (md/future
+    (tw-api/statuses-update :oauth-creds token
+                            :params {:status message})))
 
 (defn tweet-alert!
   [token status]
