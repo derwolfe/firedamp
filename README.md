@@ -4,7 +4,7 @@
 
 A bot that reports on the status of github, travis, and codecov. If anyone of
 them is failing, then a tweet will be sent to
-@covgittrav[https://twitter.com/covgittrav] stating that problems
+[@covgittrav](https://twitter.com/covgittrav) stating that problems
 are imminent.
 
 At some point int this will learn how to show when problems have been repaired.
