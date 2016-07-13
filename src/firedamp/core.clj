@@ -5,6 +5,7 @@
    [cheshire.core :as json]
    [clj-time.core :as time]
    [clj-time.coerce :as time-coerce]
+   [clojure.core.match :as cmatch]
    [clojure.core.reducers :as r]
    [environ.core :as env]
    [manifold.deferred :as md]
@@ -24,7 +25,7 @@
 (def status-io-good "All Systems Operational")
 (def github-good "good")
 
-(def state (atom {:alarm-state false ;; start off assuming it all works
+(def state (atom {:alarm-state ::good
                   :last-update (time/now)}))
 
 (defn parse-github
@@ -60,17 +61,19 @@
 
 (defn red-alert?
   [{:keys [github codecov travis]}]
-  (not (and (= status-io-good codecov)
-            (= status-io-good travis)
-            (= github-good github))))
+  (if (and (= status-io-good codecov)
+           (= status-io-good travis)
+           (= github-good github))
+    ::good
+    ::bad))
 
 (defn get-next-state
   [s0 s1]
-  (cond
-    (and (= s1 s0) (not s0)) ::sunny
-    (and (= s1 s0) s0) ::dark
-    (and (not= s1 s0) (not s0)) ::darkening
-    (and (not= s1 s0) s0) ::brightening))
+  (cmatch/match [s0 s1]
+    [::good ::bad] ::darkening
+    [::good ::good] ::sunny
+    [::bad ::bad] ::dark
+    [::bad ::good] ::brightening))
 
 (defn tweet!
   [message token]
@@ -91,16 +94,18 @@
   [ctx statuses]
   (let [{s0 :alarm-state token :token} ctx
         s1 (red-alert? statuses)
-        status (get-next-state s0 s1)]
-    (tweet-alert! token status)
+        tweet-status (get-next-state s0 s1)]
+    (tweet-alert! token tweet-status)
     (-> ctx
-        (assoc :alarm-state status)
+        ;; why not set the state to a keyword ::bad ::good
+        (assoc :alarm-state s1)
         (assoc :last-update (time/now)))))
 
 (defn run-world!
   []
   (md/let-flow [statuses (get-parse-statuses!)]
-    (reset! state (alert! @state statuses))))
+    (reset! state (alert! @state statuses))
+    (timbre/info (:alarm-state @state))))
 
 (defn keep-checking
   [period]
