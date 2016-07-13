@@ -47,9 +47,9 @@
      (json/parse-stream s true))))
 
 (defn get-parse-statuses!
-  [period]
   "Fetch and parse the status messages for all of the providers.
    Returns a deferred that fire when parsing is finished."
+  [period]
   (let [threshold-date (time/minus (time/now) (time/seconds period))]
     ;; these should all be able to timeout and show as failures
     (md/let-flow [codecov-status (fetch-json-status! codecov)
