@@ -78,7 +78,7 @@
         (is (= {:codecov core/status-io-good
                 :travis core/status-io-good
                 :github core/github-good}
-               @(core/get-parse-statuses! 30)))))))
+               @(core/get-parse-statuses!)))))))
 
 (deftest tweet-alert!
   (let [toot (atom {})

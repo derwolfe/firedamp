@@ -49,15 +49,14 @@
 (defn get-parse-statuses!
   "Fetch and parse the status messages for all of the providers.
    Returns a deferred that fire when parsing is finished."
-  [period]
-  (let [threshold-date (time/minus (time/now) (time/seconds period))]
-    ;; these should all be able to timeout and show as failures
-    (md/let-flow [codecov-status (fetch-json-status! codecov)
-                  travis-status (fetch-json-status! travis)
-                  github-status (fetch-json-status! github)]
-      {:codecov (parse-status-io codecov-status)
-       :travis (parse-status-io travis-status)
-       :github (parse-github github-status)})))
+  []
+  ;; these should all be able to timeout and show as failures
+  (md/let-flow [codecov-status (fetch-json-status! codecov)
+                travis-status (fetch-json-status! travis)
+                github-status (fetch-json-status! github)]
+    {:codecov (parse-status-io codecov-status)
+     :travis (parse-status-io travis-status)
+     :github (parse-github github-status)}))
 
 (defn red-alert?
   [{:keys [github codecov travis]}]
@@ -99,15 +98,13 @@
         (assoc :last-update (time/now)))))
 
 (defn run-world!
-  [period]
-  (md/let-flow [statuses (get-parse-statuses! period)]
+  []
+  (md/let-flow [statuses (get-parse-statuses!)]
     (reset! state (alert! @state statuses))))
 
 (defn keep-checking
   [period]
-  (mt/every
-   (* 1000 period) ;; ms -> sec
-   #(run-world! period)))
+  (mt/every period run-world!))
 
 (defn ^:private staying-alive
   []
@@ -126,4 +123,4 @@
   [& args]
   (staying-alive)
   (swap! state conj {:token (setup-twitter env/env)})
-  (keep-checking (* 60 2)))
+  (keep-checking (mt/minutes 2)))
