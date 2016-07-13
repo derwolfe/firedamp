@@ -53,10 +53,15 @@
         (is (= [core/github] @hits))))))
 
 (deftest get-next-state
-  (is (= :firedamp.core/sunny (core/get-next-state false false)))
-  (is (= :firedamp.core/dark (core/get-next-state true true)))
-  (is (= :firedamp.core/darkening (core/get-next-state false true)))
-  (is (= :firedamp.core/brightening (core/get-next-state true false))))
+  ;; this should use are
+  (is (= :firedamp.core/sunny
+         (core/get-next-state :firedamp.core/good :firedamp.core/good)))
+  (is (= :firedamp.core/dark
+         (core/get-next-state :firedamp.core/bad :firedamp.core/bad)))
+  (is (= :firedamp.core/darkening
+         (core/get-next-state :firedamp.core/good :firedamp.core/bad)))
+  (is (= :firedamp.core/brightening
+         (core/get-next-state :firedamp.core/bad :firedamp.core/good))))
 
 (deftest get-parse-statuses!-tests
   ;; parse and fetch are already independently tested
