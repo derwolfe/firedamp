@@ -105,7 +105,7 @@
   []
   (md/let-flow [statuses (get-parse-statuses!)]
     (reset! state (alert! @state statuses))
-    (timbre/info (:alarm-state @state))))
+    (timbre/info "current state" (:alarm-state @state))))
 
 (defn keep-checking
   [period]
