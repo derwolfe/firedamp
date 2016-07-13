@@ -10,57 +10,47 @@
    [manifold.deferred :as md]
    [manifold.stream :as ms]))
 
-;; the feed is from a specific date
-(def travis-date-without-events (time/date-time 2017 6 30 0 0 0))
-(def travis-date-with-events (time/date-time 2016 6 30 15 16 0))
-(def codecov-date-with-events (time/date-time 2016 6 30 15 16 0))
+(defn status-clj
+  [status when]
+  {:page
+   {:id "pnpcptp8xh9k"
+    :name "Travis CI"
+    :url "https://www.traviscistatus.com",
+    :updated_at (time-coerce/to-long when)},
+   :status
+   {:indicator "none"
+    :description status}})
+
+(defn github-clj
+  [status when]
+  {:status status :last-updated (time-coerce/to-long when)})
 
 ;; need tests for each success/failure case
 (deftest parse-status-tests
-  (testing "reads codecov feed"
-    (let [feed-stream (-> "test/codecov.atom"
-                          io/resource
-                          io/input-stream)
-          parsed (core/parse-status-page feed-stream codecov-date-with-events)]
-      (is (= 1 (count parsed)))))
-  (testing "reads travis feed"
-    (let [feed-stream (-> "test/travis.atom"
-                          io/resource
-                          io/input-stream)
-          ;; as of this date, the atom feed contains only a single event
-          parsed (core/parse-status-page feed-stream travis-date-with-events)]
-      (is (= 1 (count parsed)))))
+  (testing "parses status-io (tr)"
+    (let [bad (status-clj "Oh shit" (time/now))
+          good (status-clj "All Systems Operational" (time/now))]
+      (is (= "All Systems Operational" (core/parse-status-io good)))
+      (is (= "Oh shit" (core/parse-status-io bad)))))
   (testing "parses github status"
-    (let [bad {:status "bad"}
-          good {:status "good"}]
+    (let [bad (github-clj "bad" (time/now))
+          good (github-clj "good" (time/now))]
       (is (= "bad" (core/parse-github bad)))
       (is (= "good" (core/parse-github good))))))
 
-(defn github-json [status when]
-  (json/generate-string {:status status :last-updated (time-coerce/to-long when)}))
-
 (deftest fetch-tests
-  (testing "fetches statuspages"
-    (let [stream-response "heedly mcskniverson\nwent to the market"
+  ;; XXX parametrize this for the urls
+  (testing "fetches urls"
+    (let [stream-response (json/generate-string (github-clj "bad" (time/now)))
+          expected (json/parse-string stream-response true)
           s (->> stream-response (map str) ms/->source)
           hits (atom [])
           fake-get (fn [url]
                      (swap! hits conj url)
                      {:body s})]
       (with-redefs [aleph.http/get fake-get]
-        (is (= stream-response (bs/to-string @(core/fetch-statuspage! core/travis))))
-        (is (= [core/travis] @hits)))))
-  (testing "fetches github")
-  (let [stream-response (github-json "bad" (time/now))
-        expected (json/parse-string stream-response true)
-        s (->> stream-response (map str) ms/->source)
-        hits (atom [])
-        fake-get (fn [url]
-                   (swap! hits conj url)
-                   {:body s})]
-    (with-redefs [aleph.http/get fake-get]
-      (is (= expected @(core/fetch-github!)))
-      (is (= [core/github] @hits)))))
+        (is (= expected @(core/fetch-json-status! core/github)))
+        (is (= [core/github] @hits))))))
 
 (deftest get-next-state
   (is (= :firedamp.core/sunny (core/get-next-state false false)))
@@ -72,18 +62,22 @@
   ;; parse and fetch are already independently tested
   (testing "returns a deferred wrapping a map of statuses"
     (let [return-status (fn [status] (md/success-deferred status))
-          feed-stream (fn [] (-> "test/codecov.atom"
-                                 io/resource
-                                 io/input-stream))
-          fake-github (fn [] (return-status
-                              {:status "good"
-                               :last-update travis-date-without-events}))
-          fake-statuspage (fn [url] (return-status (feed-stream)))
-          fake-now (fn [] travis-date-without-events)]
-      (with-redefs [firedamp.core/fetch-statuspage! fake-statuspage
-                    firedamp.core/fetch-github! fake-github
-                    clj-time.core/now fake-now]
-        (is (= {:codecov '() :travis '() :github "good"}
+          now (time/now)
+          fake-json-status
+          (fn [url]
+            (condp = url
+              core/github
+              (return-status (github-clj core/github-good now))
+
+              core/travis
+              (return-status (status-clj core/status-io-good now))
+
+              core/codecov
+              (return-status (status-clj core/status-io-good now))))]
+      (with-redefs [firedamp.core/fetch-json-status! fake-json-status]
+        (is (= {:codecov core/status-io-good
+                :travis core/status-io-good
+                :github core/github-good}
                @(core/get-parse-statuses! 30)))))))
 
 (deftest tweet-alert!
@@ -98,7 +92,7 @@
         (is (= t (:token @toot))))
       (testing "tweets when repaired"
         (core/tweet-alert! t :firedamp.core/brightening)
-        (is (= "repaired" (:message @toot)))
+        (is (= "should be back to normal" (:message @toot)))
         (is (= t (:token @toot)))))))
 
 ;; (deftest alert-tests

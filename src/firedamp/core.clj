@@ -7,7 +7,6 @@
    [clj-time.coerce :as time-coerce]
    [clojure.core.reducers :as r]
    [environ.core :as env]
-   [feedparser-clj.core :as feedparser]
    [manifold.deferred :as md]
    [manifold.time :as mt]
    [taoensso.timbre :as timbre]
@@ -19,45 +18,32 @@
   (:gen-class))
 
 (def github "https://status.github.com/api/status.json")
-(def codecov "http://status.codecov.io/history.atom")
-(def travis "http://www.traviscistatus.com/history.atom")
+(def codecov "https://wdzsn5dlywj9.statuspage.io/api/v2/status.json")
+(def travis "https://pnpcptp8xh9k.statuspage.io/api/v2/status.json")
+
+(def status-io-good "All Systems Operational")
+(def github-good "good")
 
 (def state (atom {:alarm-state false ;; start off assuming it all works
                   :last-update (time/now)}))
-
-(defn parse-status-page
-  [feed threshold]
-  (let [parsed (feedparser/parse-feed feed)
-        entries (:entries parsed)
-        within-threshold  (filter
-                           #(time/after? (time-coerce/from-date (:updated-date %)) threshold)
-                           entries)]
-    within-threshold))
 
 (defn parse-github
   [msg]
   (:status msg))
 
-(defn fetch-statuspage!
+(defn parse-status-io
+  [msg]
+  (:description (:status msg)))
+
+(defn fetch-json-status!
   [url]
-  (timbre/info "fetching" url)
+  (timbre/info "fetching url" url)
   (md/chain
    (http/get url)
    :body
-   bs/to-input-stream
-   (fn [stream]
-     (timbre/info "got status page for" url)
-     stream)))
-
-(defn fetch-github!
-  []
-  (timbre/info "fetching github")
-  (md/chain
-   (http/get github)
-   :body
    bs/to-reader
    (fn [s]
-     (timbre/info "got response from github")
+     (timbre/info "got response from" url)
      (json/parse-stream s true))))
 
 (defn get-parse-statuses!
@@ -66,21 +52,19 @@
    Returns a deferred that fire when parsing is finished."
   (let [threshold-date (time/minus (time/now) (time/seconds period))]
     ;; these should all be able to timeout and show as failures
-    (md/let-flow [co (fetch-statuspage! codecov)
-                  tr (fetch-statuspage! travis)
-                  gh (fetch-github!)]
-      (let [parsed-co (parse-status-page co threshold-date)
-            parsed-tr (parse-status-page tr threshold-date)
-            parsed-gh (parse-github gh)]
-        {:codecov parsed-co :travis parsed-tr :github parsed-gh}))))
+    (md/let-flow [codecov-status (fetch-json-status! codecov)
+                  travis-status (fetch-json-status! travis)
+                  github-status (fetch-json-status! github)]
+      {:codecov (parse-status-io codecov-status)
+       :travis (parse-status-io travis-status)
+       :github (parse-github github-status)})))
 
 (defn red-alert?
-  [github codecov travis]
-  (not (and (= 0 (count travis))
-            (= 0 (count codecov))
-            (= "good" github))))
+  [{:keys [github codecov travis]}]
+  (not (and (= status-io-good codecov)
+            (= status-io-good travis)
+            (= github-good github))))
 
-;; once repair is added this should be a state machine...
 (defn get-next-state
   [s0 s1]
   (cond
@@ -102,14 +86,12 @@
   (timbre/info status)
   (condp = status
     ::darkening (tweet! "expect problems" token)
-    ::brightening (tweet! "repaired" token)))
+    ::brightening (tweet! "should be back to normal" token)))
 
-;; it seems odd that this controls tweeting.
 (defn alert!
-  [ctx parsed-statuses]
+  [ctx statuses]
   (let [{s0 :alarm-state token :token} ctx
-        {:keys [codecov github travis]} parsed-statuses
-        s1 (red-alert? github codecov travis)
+        s1 (red-alert? statuses)
         status (get-next-state s0 s1)]
     (tweet-alert! token status)
     (-> ctx
