@@ -78,7 +78,6 @@
 (defn tweet!
   [message token]
   (timbre/info "tweeting" message)
-  ;; XXX this might want a timeout value
   (md/future
     (tw-api/statuses-update :oauth-creds token
                             :params {:status message})))
@@ -95,17 +94,21 @@
   (let [{s0 :alarm-state token :token} ctx
         s1 (red-alert? statuses)
         tweet-status (get-next-state s0 s1)]
-    (tweet-alert! token tweet-status)
-    (-> ctx
-        ;; why not set the state to a keyword ::bad ::good
-        (assoc :alarm-state s1)
-        (assoc :last-update (time/now)))))
+    (md/chain
+     (tweet-alert! token tweet-status)
+     (fn [& args]
+       (-> ctx
+           (assoc :alarm-state s1)
+           (assoc :last-update (time/now)))))))
 
 (defn run-world!
   []
   (md/let-flow [statuses (get-parse-statuses!)]
-    (reset! state (alert! @state statuses))
-    (timbre/info "current state" (:alarm-state @state))))
+    (md/chain
+     (alert! @state statuses)
+     (fn [new-world]
+       (reset! state new-world)
+       (timbre/info "current state of the world" (:alarm-state @state))))))
 
 (defn keep-checking
   [period]
