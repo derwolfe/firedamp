@@ -25,7 +25,7 @@
 (def status-io-good "All Systems Operational")
 (def github-good "good")
 
-(def state (atom {:alarm-state ::good
+(def state (atom {:alarm-state ::bad
                   :last-update (time/now)}))
 
 (defn parse-github
@@ -78,16 +78,21 @@
 (defn tweet!
   [message token]
   (timbre/info "tweeting" message)
-  (md/future
-    (tw-api/statuses-update :oauth-creds token
-                            :params {:status message})))
+  (md/chain
+   ;; hmm. wrongness
+   (md/future
+     (tw-api/statuses-update :oauth-creds token
+                             :params {:status message}))
+   #(timbre/info "tweeted")))
 
 (defn tweet-alert!
   [token status]
-  (timbre/info status)
+  (timbre/info "tweet alert" status)
   (condp = status
     ::darkening (tweet! "expect problems" token)
-    ::brightening (tweet! "should be back to normal" token)))
+    ::brightening (tweet! "should be back to normal" token)
+    ;; else
+    ::no-tweet))
 
 (defn alert!
   [ctx statuses]
@@ -96,7 +101,7 @@
         tweet-status (get-next-state s0 s1)]
     (md/chain
      (tweet-alert! token tweet-status)
-     (fn [& args]
+     (fn [arg]
        (-> ctx
            (assoc :alarm-state s1)
            (assoc :last-update (time/now)))))))
