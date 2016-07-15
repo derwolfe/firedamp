@@ -88,7 +88,7 @@
     token))
 
 (defn tweet!
-  [message token]
+  [message]
   (timbre/info "tweeting" message)
   (let [token (setup-twitter env/env)]
     (->
@@ -101,21 +101,21 @@
          (fn [exc] (timbre/warn "exception while tweeting:" exc))))))
 
 (defn tweet-alert!
-  [token status]
+  [status]
   (timbre/info "tweet alert" status)
   (condp = status
-    ::darkening (tweet! "expect problems @chriswwolfe" token)
-    ::brightening (tweet! "should be back to normal @chriswwolfe" token)
+    ::darkening (tweet! "expect problems @chriswwolfe")
+    ::brightening (tweet! "should be back to normal @chriswwolfe")
     ;; else
-    ::no-tweet))
+    (md/success-deferred ::no-tweet)))
 
 (defn alert!
   [ctx statuses]
-  (let [{s0 :alarm-state token :token} ctx
+  (let [{s0 :alarm-state} ctx
         s1 (red-alert? statuses)
         tweet-status (get-next-state s0 s1)]
     (md/chain
-     (tweet-alert! token tweet-status)
+     (tweet-alert! tweet-status)
      (fn [arg]
        (-> ctx
            (assoc :alarm-state s1)
