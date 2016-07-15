@@ -141,4 +141,4 @@
 (defn -main
   [& args]
   (staying-alive)
-  (keep-checking (mt/minutes 1)))
+  (keep-checking (mt/minutes 2)))
