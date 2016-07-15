@@ -47,8 +47,7 @@
       (timbre/info "got response from" url)
       (json/parse-stream s true)))
    (md/catch Exception
-       (fn [exc] (timbre/warn "exception while fetching" exc)))))
-
+             (fn [exc] (timbre/warn "exception while fetching" exc)))))
 
 (defn get-parse-statuses!
   "Fetch and parse the status messages for all of the providers.
@@ -97,8 +96,8 @@
       (md/future (tw-api/statuses-update :oauth-creds token :params {:status message}))
       #(timbre/info "tweeted"))
      (md/catch
-         Exception
-         (fn [exc] (timbre/warn "exception while tweeting:" exc))))))
+      Exception
+      (fn [exc] (timbre/warn "exception while tweeting:" exc))))))
 
 (defn tweet-alert!
   [status]
@@ -130,7 +129,6 @@
      (fn [new-world]
        (reset! state new-world)
        (timbre/infof "s0=%s, s1=%s" (:alarm-state old-state) (:alarm-state @state))))))
-
 
 (defn keep-checking
   [period]
