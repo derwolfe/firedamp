@@ -104,8 +104,8 @@
   [token status]
   (timbre/info "tweet alert" status)
   (condp = status
-    ::darkening (tweet! "expect problems" token)
-    ::brightening (tweet! "should be back to normal" token)
+    ::darkening (tweet! "expect problems @chriswwolfe" token)
+    ::brightening (tweet! "should be back to normal @chriswwolfe" token)
     ;; else
     ::no-tweet))
 
