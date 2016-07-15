@@ -14,8 +14,6 @@
    [twitter.oauth :as tw-auth]
    [twitter.api.restful :as tw-api]
    [twitter.callbacks.handlers :as tw-handlers])
-  (:import
-   (twitter.callbacks.protocols SyncSingleCallback))
   (:gen-class))
 
 (def github "https://status.github.com/api/status.json")
@@ -25,7 +23,7 @@
 (def status-io-good "All Systems Operational")
 (def github-good "good")
 
-(def state (atom {:alarm-state ::bad
+(def state (atom {:alarm-state ::good
                   :last-update (time/now)}))
 
 (defn parse-github
@@ -39,13 +37,18 @@
 (defn fetch-json-status!
   [url]
   (timbre/info "fetching url" url)
-  (md/chain
-   (http/get url)
-   :body
-   bs/to-reader
-   (fn [s]
-     (timbre/info "got response from" url)
-     (json/parse-stream s true))))
+  ;; these should be able to timeout
+  (->
+   (md/chain
+    (http/get url)
+    :body
+    bs/to-reader
+    (fn [s]
+      (timbre/info "got response from" url)
+      (json/parse-stream s true)))
+   (md/catch Exception
+       (fn [exc] (timbre/warn "exception while fetching" exc)))))
+
 
 (defn get-parse-statuses!
   "Fetch and parse the status messages for all of the providers.
@@ -75,15 +78,27 @@
     [::bad ::bad] ::dark
     [::bad ::good] ::brightening))
 
+(defn setup-twitter
+  [env]
+  (let [{:keys [api-key api-secret access-token access-token-secret]} env
+        token (tw-auth/make-oauth-creds api-key
+                                        api-secret
+                                        access-token
+                                        access-token-secret)]
+    token))
+
 (defn tweet!
   [message token]
   (timbre/info "tweeting" message)
-  (md/chain
-   ;; hmm. wrongness
-   (md/future
-     (tw-api/statuses-update :oauth-creds token
-                             :params {:status message}))
-   #(timbre/info "tweeted")))
+  (let [token (setup-twitter env/env)]
+    (->
+     (md/chain
+      ;; this should also be able to timeout
+      (md/future (tw-api/statuses-update :oauth-creds token :params {:status message}))
+      #(timbre/info "tweeted"))
+     (md/catch
+         Exception
+         (fn [exc] (timbre/warn "exception while tweeting:" exc))))))
 
 (defn tweet-alert!
   [token status]
@@ -108,12 +123,14 @@
 
 (defn run-world!
   []
-  (md/let-flow [statuses (get-parse-statuses!)]
+  (let [old-state @state]
     (md/chain
-     (alert! @state statuses)
+     (get-parse-statuses!)
+     #(alert! @state %)
      (fn [new-world]
        (reset! state new-world)
-       (timbre/info "current state of the world" (:alarm-state @state))))))
+       (timbre/infof "s0=%s, s1=%s" (:alarm-state old-state) (:alarm-state @state))))))
+
 
 (defn keep-checking
   [period]
@@ -123,17 +140,7 @@
   []
   (.start (Thread. (fn [] (.join (Thread/currentThread))) "staying alive")))
 
-(defn setup-twitter
-  [env]
-  (let [{:keys [api-key api-secret access-token access-token-secret]} env
-        token (tw-auth/make-oauth-creds api-key
-                                        api-secret
-                                        access-token
-                                        access-token-secret)]
-    token))
-
 (defn -main
   [& args]
   (staying-alive)
-  (swap! state conj {:token (setup-twitter env/env)})
-  (keep-checking (mt/minutes 2)))
+  (keep-checking (mt/minutes 1)))
