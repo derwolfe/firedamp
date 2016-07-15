@@ -87,18 +87,15 @@
 
 (deftest tweet-alert!
   (let [toot (atom {})
-        t "token"
-        fake-tweet (fn [message token]
-                     (reset! toot {:message message :token t}))]
+        fake-tweet (fn [message]
+                     (reset! toot {:message message}))]
     (with-redefs [firedamp.core/tweet! fake-tweet]
       (testing "tweets when problem"
-        (core/tweet-alert! t :firedamp.core/darkening)
-        (is (= "expect problems" (:message @toot)))
-        (is (= t (:token @toot))))
+        (core/tweet-alert! :firedamp.core/darkening)
+        (is (= "expect problems @chriswwolfe" (:message @toot))))
       (testing "tweets when repaired"
-        (core/tweet-alert! t :firedamp.core/brightening)
-        (is (= "should be back to normal" (:message @toot)))
-        (is (= t (:token @toot)))))))
+        (core/tweet-alert! :firedamp.core/brightening)
+        (is (= "should be back to normal @chriswwolfe" (:message @toot)))))))
 
 ;; (deftest alert-tests
 ;;   (testing "alerts "
