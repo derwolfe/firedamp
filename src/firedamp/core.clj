@@ -12,8 +12,7 @@
    [manifold.time :as mt]
    [taoensso.timbre :as timbre]
    [twitter.oauth :as tw-auth]
-   [twitter.api.restful :as tw-api]
-   [twitter.callbacks.handlers :as tw-handlers])
+   [twitter.api.restful :as tw-api])
   (:gen-class))
 
 (def github "https://status.github.com/api/status.json")
@@ -22,6 +21,10 @@
 
 (def status-io-good "All Systems Operational")
 (def github-good "good")
+
+(def bad-fetch-msg "problem fetching")
+
+(def timeout-after (mt/seconds 5))
 
 (def state (atom {:alarm-state ::good
                   :last-update (time/now)}))
@@ -37,29 +40,49 @@
 (defn fetch-json-status!
   [url]
   (timbre/info "fetching url" url)
-  ;; these should be able to timeout
-  (->
-   (md/chain
-    (http/get url)
-    :body
-    bs/to-reader
-    (fn [s]
-      (timbre/info "got response from" url)
-      (json/parse-stream s true)))
-   (md/catch Exception
-             (fn [exc] (timbre/warn "exception while fetching" exc)))))
+  (md/timeout!
+   (->
+    (md/chain
+     (http/get url)
+     :body
+     bs/to-reader
+     (fn [s]
+       (timbre/info "got response from" url)
+       [(json/parse-stream s true) ::no-error]))
+    (md/catch Exception
+              (fn [exc]
+                (timbre/warn "exception while fetching" exc)
+                [{} ::fetch-error])))
+   ;; timeout after 2 seconds
+   timeout-after
+   [{} ::timeout]))
+
+(defn is-error?
+  [i]
+  (condp = i
+    ::fetch-error true
+    ::timeout-error true
+    false))
 
 (defn get-parse-statuses!
   "Fetch and parse the status messages for all of the providers.
    Returns a deferred that fire when parsing is finished."
   []
-  ;; these should all be able to timeout and show as failures
-  (md/let-flow [codecov-status (fetch-json-status! codecov)
-                travis-status (fetch-json-status! travis)
-                github-status (fetch-json-status! github)]
-    {:codecov (parse-status-io codecov-status)
-     :travis (parse-status-io travis-status)
-     :github (parse-github github-status)}))
+  (md/let-flow [[codecov-status codecov-err] (fetch-json-status! codecov)
+                [travis-status travis-err] (fetch-json-status! travis)
+                [github-status github-err] (fetch-json-status! github)]
+
+    (if (or (is-error? codecov-err) (is-error? travis-err) (is-error? github-err))
+      (do
+        (timbre/warnf "failure fetching; codecov->%s, travis->%s, github->%s"
+                      codecov-err travis-err github-err)
+        {:codecov bad-fetch-msg
+         :travis bad-fetch-msg
+         :github bad-fetch-msg})
+      ;; else
+      {:codecov (parse-status-io codecov-status)
+       :travis (parse-status-io travis-status)
+       :github (parse-github github-status)})))
 
 (defn red-alert?
   [{:keys [github codecov travis]}]
@@ -136,6 +159,7 @@
 
 (defn ^:private staying-alive
   []
+  ;; this should die with the looping call...
   (.start (Thread. (fn [] (.join (Thread/currentThread))) "staying alive")))
 
 (defn -main
