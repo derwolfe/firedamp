@@ -67,7 +67,7 @@
           (let [result (core/fetch-json-status! core/github)]
             (mt/advance clock (mt/seconds core/timeout-after))
             (is (thrown-with-msg? TimeoutException
-                                  #"timed out after 5000.0 milliseconds" @result))
+                                  #"timed out after 10000.0 milliseconds" @result))
             (is (= [core/github] @hits))))))))
 
 (deftest get-next-state

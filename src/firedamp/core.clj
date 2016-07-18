@@ -26,7 +26,7 @@
 
 (def bad-fetch-msg "problem fetching")
 
-(def timeout-after (mt/seconds 5))
+(def timeout-after (mt/seconds 10))
 
 (def state (atom {:alarm-state ::good
                   :last-update (time/now)}))
