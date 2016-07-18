@@ -7,8 +7,6 @@ them is failing, then a tweet will be sent to
 [@covgittrav](https://twitter.com/covgittrav) stating that problems
 are imminent.
 
-At some point int this will learn how to show when problems have been repaired.
-
 ## License
 
 Copyright © Chris Wolfe
