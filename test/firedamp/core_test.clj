@@ -102,8 +102,6 @@
                 :github core/github-good}
                @(core/get-parse-statuses!))))))
   (testing "returns data when fetching timed out"
-    ;; shouldn't this throw?
-    ;; you could use a fake clock
     (let [calls (atom [])
           fake-get (fn [url]
                      (mt/in
