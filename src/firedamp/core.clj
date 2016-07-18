@@ -13,6 +13,8 @@
    [taoensso.timbre :as timbre]
    [twitter.oauth :as tw-auth]
    [twitter.api.restful :as tw-api])
+  (:import
+   [java.util.concurrent TimeoutException])
   (:gen-class))
 
 (def github "https://status.github.com/api/status.json")
@@ -40,49 +42,41 @@
 (defn fetch-json-status!
   [url]
   (timbre/info "fetching url" url)
-  (md/timeout!
-   (->
-    (md/chain
-     (http/get url)
-     :body
-     bs/to-reader
-     (fn [s]
-       (timbre/info "got response from" url)
-       [(json/parse-stream s true) ::no-error]))
-    (md/catch Exception
-              (fn [exc]
-                (timbre/warn "exception while fetching" exc)
-                [{} ::fetch-error])))
-   ;; timeout after 2 seconds
-   timeout-after
-   [{} ::timeout]))
-
-(defn is-error?
-  [i]
-  (condp = i
-    ::fetch-error true
-    ::timeout-error true
-    false))
+  (md/chain
+   (md/timeout! (http/get url) timeout-after)
+   :body
+   bs/to-reader
+   (fn [s]
+     (timbre/info "got response from" url)
+     (json/parse-stream s true))))
 
 (defn get-parse-statuses!
   "Fetch and parse the status messages for all of the providers.
    Returns a deferred that fire when parsing is finished."
   []
-  (md/let-flow [[codecov-status codecov-err] (fetch-json-status! codecov)
-                [travis-status travis-err] (fetch-json-status! travis)
-                [github-status github-err] (fetch-json-status! github)]
+  (let [parse-status
+        (fn [status url]
+          (condp = url
+            codecov (parse-status-io status)
+            travis (parse-status-io status)
+            github (parse-github status)))
 
-    (if (or (is-error? codecov-err) (is-error? travis-err) (is-error? github-err))
-      (do
-        (timbre/warnf "failure fetching; codecov->%s, travis->%s, github->%s"
-                      codecov-err travis-err github-err)
-        {:codecov bad-fetch-msg
-         :travis bad-fetch-msg
-         :github bad-fetch-msg})
-      ;; else
-      {:codecov (parse-status-io codecov-status)
-       :travis (parse-status-io travis-status)
-       :github (parse-github github-status)})))
+        fetch-and-parse!
+        (fn [url]
+          (->
+           (md/chain (fetch-json-status! url)
+                     #(parse-status % url))
+           (md/catch
+            TimeoutException
+            (fn [exc]
+              (timbre/warnf "fetching %s timed out: %s" url exc)
+              bad-fetch-msg))))]
+    (md/let-flow [codecov-status (fetch-and-parse! codecov)
+                  travis-status (fetch-and-parse! travis)
+                  github-status  (fetch-and-parse! github)]
+      {:codecov codecov-status
+       :travis travis-status
+       :github github-status})))
 
 (defn red-alert?
   [{:keys [github codecov travis]}]

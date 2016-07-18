@@ -9,7 +9,9 @@
    [firedamp.core :as core]
    [manifold.deferred :as md]
    [manifold.time :as mt]
-   [manifold.stream :as ms]))
+   [manifold.stream :as ms])
+  (:import
+   [java.util.concurrent TimeoutException]))
 
 (defn status-clj
   [status when]
@@ -43,8 +45,7 @@
   ;; XXX parametrize this for the urls
   (testing "fetches urls and returns data when available"
     (let [stream-response (json/generate-string (github-clj "bad" (time/now)))
-          expected [(json/parse-string stream-response true)
-                    :firedamp.core/no-error]
+          expected (json/parse-string stream-response true)
           s (->> stream-response (map str) ms/->source)
           hits (atom [])
           fake-get (fn [url]
@@ -53,30 +54,21 @@
       (with-redefs [aleph.http/get fake-get]
         (is (= expected @(core/fetch-json-status! core/github)))
         (is (= [core/github] @hits)))))
-  (testing "returns an error keyword when fetching times out"
-    (let [expected [{} :firedamp.core/timeout]
-          hits (atom [])
+  (testing "throws TimeoutException when requesting takes too long"
+    (let [hits (atom [])
           fake-get (fn [url]
                      (swap! hits conj url)
                      (mt/in
-                      (mt/seconds (* 2 firedamp.core/timeout-after))
+                      (mt/seconds (* 2 core/timeout-after))
                       #(fn [] {})))
           clock (mt/mock-clock)]
       (with-redefs [aleph.http/get fake-get]
         (mt/with-clock clock
           (let [result (core/fetch-json-status! core/github)]
-            (mt/advance clock (mt/seconds firedamp.core/timeout-after))
-            (is (= expected @result))
-            (is (= [core/github] @hits)))))))
-  (testing "returns an error error keyword when fetching takes too long"
-    (let [expected [{} :firedamp.core/fetch-error]
-          hits (atom [])
-          fake-get (fn [url]
-                     (swap! hits conj url)
-                     (md/error-deferred (Exception. "I failed")))]
-      (with-redefs [aleph.http/get fake-get]
-        (is (= expected @(core/fetch-json-status! core/github)))
-        (is (= [core/github] @hits))))))
+            (mt/advance clock (mt/seconds core/timeout-after))
+            (is (thrown-with-msg? TimeoutException
+                                  #"timed out after 5000.0 milliseconds" @result))
+            (is (= [core/github] @hits))))))))
 
 (deftest get-next-state
   ;; this should use are
@@ -91,7 +83,7 @@
 
 (deftest get-parse-statuses!-tests
   (testing "happy path - returns a deferred wrapping a map of statuses"
-    (let [return-status (fn [status] (md/success-deferred [status :firedamp.core/no-error]))
+    (let [return-status (fn [status] (md/success-deferred status))
           now (time/now)
           fake-json-status
           (fn [url]
@@ -109,20 +101,24 @@
                 :travis core/status-io-good
                 :github core/github-good}
                @(core/get-parse-statuses!))))))
-  (testing "returns data when fetching failed"
-    (let [fake-status (fn [url] (md/success-deferred [nil :firedamp.core/fetch-error]))]
-      (with-redefs [firedamp.core/fetch-json-status! fake-status]
-        (is (= {:codecov core/bad-fetch-msg
-                :travis core/bad-fetch-msg
-                :github core/bad-fetch-msg}
-               @(core/get-parse-statuses!))))))
   (testing "returns data when fetching timed out"
-    (let [fake-status (fn [url] (md/success-deferred [nil :firedamp.core/timeout-error]))]
-      (with-redefs [firedamp.core/fetch-json-status! fake-status]
-        (is (= {:codecov core/bad-fetch-msg
-                :travis core/bad-fetch-msg
-                :github core/bad-fetch-msg}
-               @(core/get-parse-statuses!)))))))
+    ;; shouldn't this throw?
+    ;; you could use a fake clock
+    (let [calls (atom [])
+          fake-get (fn [url]
+                     (mt/in
+                      (mt/seconds (* 2 core/timeout-after))
+                      (fn [url] (swap! calls conj url))))
+          clock (mt/mock-clock)]
+      (with-redefs [aleph.http/get fake-get]
+        (mt/with-clock clock
+          (let [result (core/get-parse-statuses!)]
+            (mt/advance clock (mt/seconds core/timeout-after))
+            (is (= {:codecov core/bad-fetch-msg
+                    :travis core/bad-fetch-msg
+                    :github core/bad-fetch-msg}
+                   @result))
+            (is (= 0 (count @calls)))))))))
 
 (deftest tweet-alert!
   (let [toot (atom {})
