@@ -111,7 +111,7 @@
      (md/chain
       ;; this should also be able to timeout
       (md/future (tw-api/statuses-update :oauth-creds token :params {:status message}))
-      #(timbre/info "tweeted"))
+      (fn [_] (timbre/info "tweeted")))
      (md/catch
       Exception
       (fn [exc] (timbre/warn "exception while tweeting:" exc))))))
