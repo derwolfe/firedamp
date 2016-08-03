@@ -28,4 +28,5 @@
                      catch [[:inner 0]]}}
   :main ^:skip-aot firedamp.core
   :target-path "target/%s"
-  :profiles {:uberjar {:aot :all}})
+  :profiles {:uberjar {:aot :all}
+             :production {}})

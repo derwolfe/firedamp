@@ -1,1 +1,1 @@
-web: lein with-profile uberjar trampoline run -m firedamp.core $PORT
+web: lein with-profile production trampoline run -m firedamp.core $PORT
