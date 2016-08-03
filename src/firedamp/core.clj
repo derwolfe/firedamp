@@ -3,6 +3,8 @@
    [aleph.http :as http]
    [byte-streams :as bs]
    [cheshire.core :as json]
+   [compojure.core :as cjc]
+   [compojure.route :as cjr]
    [clj-time.core :as time]
    [clj-time.coerce :as time-coerce]
    [clojure.core.match :as cmatch]
@@ -158,8 +160,7 @@
   []
   (.start (Thread. (fn [] (.join (Thread/currentThread))) "staying alive")))
 
-
-(defn handler [_]
+(defn metrics-handler [_]
   (prometheus/increase-counter @store "test" "some_counter" ["bar"] 3)
   (prometheus/set-gauge @store "test" "some_gauge" 101 ["bar"])
   (prometheus/track-observation @store "test" "some_histogram" 0.71 ["bar"])
@@ -178,9 +179,13 @@
        (register-metrics)
        (reset! store)))
 
+(cjc/defroutes app
+  (cjc/GET "/metrics" [] metrics-handler)
+  (cjr/not-found "404: Not Found"))
+
 (defn -main
   [& args]
   (init-metrics!)
-  (http/start-server handler {:port 8080})
+  (http/start-server app {:port 8080})
   (keep-checking (mt/minutes 2))
   (staying-alive))
