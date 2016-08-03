@@ -185,7 +185,8 @@
 
 (defn -main
   [& args]
-  (init-metrics!)
-  (http/start-server app {:port 8080 :host "0.0.0.0"})
-  (keep-checking (mt/minutes 2))
-  (staying-alive))
+  (let [port (Integer/parseInt (first args))]
+    (init-metrics!)
+    (http/start-server app {:port port :host "0.0.0.0"})
+    (keep-checking (mt/minutes 2))
+    (staying-alive)))
