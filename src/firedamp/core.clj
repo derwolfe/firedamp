@@ -3,6 +3,8 @@
    [aleph.http :as http]
    [byte-streams :as bs]
    [cheshire.core :as json]
+   [compojure.core :as cjc]
+   [compojure.route :as cjr]
    [clj-time.core :as time]
    [clj-time.coerce :as time-coerce]
    [clojure.core.match :as cmatch]
@@ -12,7 +14,8 @@
    [manifold.time :as mt]
    [taoensso.timbre :as timbre]
    [twitter.oauth :as tw-auth]
-   [twitter.api.restful :as tw-api])
+   [twitter.api.restful :as tw-api]
+   [prometheus.core :as prometheus])
   (:import
    [java.util.concurrent TimeoutException])
   (:gen-class))
@@ -30,6 +33,8 @@
 
 (def state (atom {:alarm-state ::good
                   :last-update (time/now)}))
+
+(def store (atom nil))
 
 (defn parse-github
   [msg]
@@ -153,10 +158,34 @@
 
 (defn ^:private staying-alive
   []
-  ;; this should die with the looping call...
   (.start (Thread. (fn [] (.join (Thread/currentThread))) "staying alive")))
+
+(defn metrics-handler [_]
+  (prometheus/increase-counter @store "test" "some_counter" ["bar"] 3)
+  (prometheus/set-gauge @store "test" "some_gauge" 101 ["bar"])
+  (prometheus/track-observation @store "test" "some_histogram" 0.71 ["bar"])
+  (prometheus/dump-metrics (:registry @store)))
+
+;; come up with some metrics?
+(defn register-metrics [store]
+  (->
+   store
+   (prometheus/register-counter "test" "some_counter" "some test" ["foo"])
+   (prometheus/register-gauge "test" "some_gauge" "some test" ["foo"])
+   (prometheus/register-histogram "test" "some_histogram" "some test" ["foo"] [0.7 0.8 0.9])))
+
+(defn init-metrics! []
+  (->> (prometheus/init-defaults)
+       (register-metrics)
+       (reset! store)))
+
+(cjc/defroutes app
+  (cjc/GET "/metrics" [] metrics-handler)
+  (cjr/not-found "404: Not Found"))
 
 (defn -main
   [& args]
-  (staying-alive)
-  (keep-checking (mt/minutes 2)))
+  (init-metrics!)
+  (http/start-server app {:port 8080})
+  (keep-checking (mt/minutes 2))
+  (staying-alive))
