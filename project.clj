@@ -15,7 +15,6 @@
                  [twitter-api "0.7.8"]
                  [compojure "1.5.1"]
                  [com.soundcloud/prometheus-clj "2.4.0"]]
-  :min-lein-version "2.0.0"
   :plugins [[lein-auto "0.1.2"]
             [lein-cljfmt "0.3.0"]
             [lein-environ "1.0.3"]
@@ -28,5 +27,4 @@
                      catch [[:inner 0]]}}
   :main ^:skip-aot firedamp.core
   :target-path "target/%s"
-  :profiles {:uberjar {:aot :all}
-             :production {}})
+  :profiles {:uberjar {:aot :all}})
