@@ -7,14 +7,13 @@
    [compojure.route :as cjr]
    [clj-time.core :as time]
    [clj-time.coerce :as time-coerce]
+   [clj-time.format :as time-format]
    [clojure.core.match :as cmatch]
    [clojure.core.reducers :as r]
    [environ.core :as env]
    [manifold.deferred :as md]
    [manifold.time :as mt]
    [taoensso.timbre :as timbre]
-   [twitter.oauth :as tw-auth]
-   [twitter.api.restful :as tw-api]
    [prometheus.core :as prometheus])
   (:import
    [java.util.concurrent TimeoutException])
@@ -32,6 +31,7 @@
 (def timeout-after (mt/seconds 10))
 
 (def state (atom {:alarm-state ::good
+                  :statuses nil
                   :last-update (time/now)}))
 
 (def store (atom nil))
@@ -83,7 +83,7 @@
        :travis travis-status
        :github github-status})))
 
-(defn red-alert?
+(defn down?
   [{:keys [github codecov travis]}]
   (if (and (= status-io-good codecov)
            (= status-io-good travis)
@@ -99,48 +99,15 @@
     [::bad ::bad] ::dark
     [::bad ::good] ::brightening))
 
-(defn setup-twitter
-  [env]
-  (let [{:keys [api-key api-secret access-token access-token-secret]} env
-        token (tw-auth/make-oauth-creds api-key
-                                        api-secret
-                                        access-token
-                                        access-token-secret)]
-    token))
-
-(defn tweet!
-  [message]
-  (timbre/info "tweeting" message)
-  (let [token (setup-twitter env/env)]
-    (->
-     (md/chain
-      ;; this should also be able to timeout
-      (md/future (tw-api/statuses-update :oauth-creds token :params {:status message}))
-      (fn [_] (timbre/info "tweeted")))
-     (md/catch
-      Exception
-      (fn [exc] (timbre/warn "exception while tweeting:" exc))))))
-
-(defn tweet-alert!
-  [status]
-  (timbre/info "tweet alert" status)
-  (condp = status
-    ::darkening (tweet! "expect problems @chriswwolfe")
-    ::brightening (tweet! "should be back to normal @chriswwolfe")
-    ;; else
-    (md/success-deferred ::no-tweet)))
-
 (defn alert!
   [ctx statuses]
   (let [{s0 :alarm-state} ctx
-        s1 (red-alert? statuses)
-        tweet-status (get-next-state s0 s1)]
-    (md/chain
-     (tweet-alert! tweet-status)
-     (fn [arg]
-       (-> ctx
-           (assoc :alarm-state s1)
-           (assoc :last-update (time/now)))))))
+        s1 (down? statuses)
+        status (get-next-state s0 s1)]
+    (-> ctx
+        (assoc :alarm-state s1)
+        (assoc :statuses statuses)
+        (assoc :last-update (time/now)))))
 
 (defn run-world!
   []
@@ -149,6 +116,7 @@
      (get-parse-statuses!)
      #(alert! @state %)
      (fn [new-world]
+       (timbre/info (:statuses new-world))
        (reset! state new-world)
        (timbre/infof "s0=%s, s1=%s" (:alarm-state old-state) (:alarm-state @state))))))
 
@@ -179,13 +147,28 @@
        (register-metrics)
        (reset! store)))
 
+(def built-in-formatter (time-format/formatters :basic-date-time))
+
+(defn status-handler
+  [_req]
+  (let [{:keys [statuses last-update alarm-state]} @state
+        body {:statuses statuses
+              :alarm-state alarm-state
+              :last-update (time-coerce/to-date last-update)}
+        as-json (json/generate-string body {:pretty true})]
+    {:status 200
+     :headers {"content-type" "text/plain"}
+     :body as-json}))
+
 (cjc/defroutes app
+  (cjc/GET "/" [] status-handler)
   (cjc/GET "/metrics" [] metrics-handler)
   (cjr/not-found "404: Not Found"))
 
 (defn -main
   [& args]
   (let [port (Integer/parseInt (first args))]
+    (prn port)
     (init-metrics!)
     (http/start-server app {:port port :host "0.0.0.0"})
     (keep-checking (mt/minutes 2))

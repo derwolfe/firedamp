@@ -118,18 +118,6 @@
                    @result))
             (is (= 0 (count @calls)))))))))
 
-(deftest tweet-alert!
-  (let [toot (atom {})
-        fake-tweet (fn [message]
-                     (reset! toot {:message message}))]
-    (with-redefs [firedamp.core/tweet! fake-tweet]
-      (testing "tweets when problem"
-        (core/tweet-alert! :firedamp.core/darkening)
-        (is (= "expect problems @chriswwolfe" (:message @toot))))
-      (testing "tweets when repaired"
-        (core/tweet-alert! :firedamp.core/brightening)
-        (is (= "should be back to normal @chriswwolfe" (:message @toot)))))))
-
 ;; (deftest alert-tests
 ;;   (testing "alerts "
 ;;     (let [fake-tweet (fn [msg token] (md/success-deferred ::done))]
