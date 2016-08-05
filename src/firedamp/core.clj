@@ -10,7 +10,7 @@
    [clj-time.format :as time-format]
    [clojure.core.match :as cmatch]
    [clojure.core.reducers :as r]
-   [environ.core :as env]
+   [environ.core :refer [env]]
    [manifold.deferred :as md]
    [manifold.time :as mt]
    [taoensso.timbre :as timbre]
@@ -157,7 +157,7 @@
               :last-update (time-coerce/to-date last-update)}
         as-json (json/generate-string body {:pretty true})]
     {:status 200
-     :headers {"content-type" "text/plain"}
+     :headers {"content-type" "application/json"}
      :body as-json}))
 
 (cjc/defroutes app
@@ -167,8 +167,7 @@
 
 (defn -main
   [& args]
-  (let [port (Integer/parseInt (first args))]
-    (prn port)
+  (let [port (Integer/parseInt (:port env))]
     (init-metrics!)
     (http/start-server app {:port port :host "0.0.0.0"})
     (keep-checking (mt/minutes 2))
