@@ -75,6 +75,7 @@
             TimeoutException
             (fn [exc]
               (timbre/warnf "fetching %s timed out: %s" url exc)
+              (prometheus/increase-counter @store "firedamp" "status_check" ["timedout"])
               bad-fetch-msg))))]
     (md/let-flow [codecov-status (fetch-and-parse! codecov)
                   travis-status (fetch-and-parse! travis)
@@ -129,18 +130,16 @@
   (.start (Thread. (fn [] (.join (Thread/currentThread))) "staying alive")))
 
 (defn metrics-handler [_]
-  (prometheus/increase-counter @store "test" "some_counter" ["bar"] 3)
-  (prometheus/set-gauge @store "test" "some_gauge" 101 ["bar"])
-  (prometheus/track-observation @store "test" "some_histogram" 0.71 ["bar"])
   (prometheus/dump-metrics (:registry @store)))
 
 ;; come up with some metrics?
 (defn register-metrics [store]
   (->
    store
-   (prometheus/register-counter "test" "some_counter" "some test" ["foo"])
-   (prometheus/register-gauge "test" "some_gauge" "some test" ["foo"])
-   (prometheus/register-histogram "test" "some_histogram" "some test" ["foo"] [0.7 0.8 0.9])))
+   (prometheus/register-counter "firedamp"
+                                "status_check"
+                                "counter to show if the request succeeded, failed, or timed out"
+                                ["failed" "succeeded" "timedout"])))
 
 (defn init-metrics! []
   (->> (prometheus/init-defaults)
