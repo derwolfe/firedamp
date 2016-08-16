@@ -65,17 +65,20 @@
             codecov (parse-status-io status)
             travis (parse-status-io status)
             github (parse-github status)))
-
+        bump-metric (fn [out url]
+                      (prometheus/increase-counter @store "firedamp" "status_checks" [url "success"] 1.0)
+                      out)
         fetch-and-parse!
         (fn [url]
           (->
            (md/chain (fetch-json-status! url)
+                     #(bump-metric % url)
                      #(parse-status % url))
            (md/catch
             TimeoutException
             (fn [exc]
               (timbre/warnf "fetching %s timed out: %s" url exc)
-              (prometheus/increase-counter @store "firedamp" "status_check" ["timedout"])
+              (prometheus/increase-counter @store "firedamp" "status_checks" [url "failure"] 1.0)
               bad-fetch-msg))))]
     (md/let-flow [codecov-status (fetch-and-parse! codecov)
                   travis-status (fetch-and-parse! travis)
@@ -130,16 +133,22 @@
   (.start (Thread. (fn [] (.join (Thread/currentThread))) "staying alive")))
 
 (defn metrics-handler [_]
+  (prometheus/increase-counter @store "firedamp" "inbound_requests" ["/metrics" "GET"] 1.0)
   (prometheus/dump-metrics (:registry @store)))
 
 ;; come up with some metrics?
 (defn register-metrics [store]
-  (->
-   store
-   (prometheus/register-counter "firedamp"
-                                "status_check"
-                                "counter to show if the request succeeded, failed, or timed out"
-                                ["failed" "succeeded" "timedout"])))
+  (-> store
+      (prometheus/register-counter
+       "firedamp"
+       "status_checks"
+       "status checks"
+       ["url" "success"])
+      (prometheus/register-counter
+       "firedamp"
+       "inbound_requests"
+       "count the number of inbound requests to a given endpoint"
+       ["endpoint" "method"])))
 
 (defn init-metrics! []
   (->> (prometheus/init-defaults)
@@ -155,6 +164,7 @@
               :alarm-state alarm-state
               :last-update (time-coerce/to-date last-update)}
         as-json (json/generate-string body {:pretty true})]
+    (prometheus/increase-counter @store "firedamp" "inbound_requests" ["/" "GET"] 1.0)
     {:status 200
      :headers {"content-type" "application/json"}
      :body as-json}))
