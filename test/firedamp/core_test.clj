@@ -81,9 +81,19 @@
   (is (= :firedamp.core/brightening
          (core/get-next-state :firedamp.core/bad :firedamp.core/good))))
 
+;; (defn get-metrics
+;;   [store]
+;;   (let [checks (-> (:metrics store)
+;;                    (get "firedamp")
+;;                    (get "status_checks")
+;;                    (.collect))]
+;;     ))
+
+
 (deftest get-parse-statuses!-tests
   (testing "happy path - returns a deferred wrapping a map of statuses"
-    (let [return-status (fn [status] (md/success-deferred status))
+    (let [_metrics-store (core/init-metrics!)
+          return-status (fn [status] (md/success-deferred status))
           now (time/now)
           fake-json-status
           (fn [url]
@@ -102,7 +112,8 @@
                 :github core/github-good}
                @(core/get-parse-statuses!))))))
   (testing "returns data when fetching timed out"
-    (let [calls (atom [])
+    (let [_metrics-store (core/init-metrics!)
+          calls (atom [])
           fake-get (fn [url]
                      (mt/in
                       (mt/seconds (* 2 core/timeout-after))
