@@ -7,15 +7,28 @@
                  [org.clojure/clojure "1.8.0"]
                  [org.clojure/core.match "0.3.0-alpha4"]
                  [environ "1.0.3"]
-                 [com.taoensso/timbre "4.5.1"]
-                 [aleph "0.4.1"]
                  [manifold "0.1.4"]
+
+                 ;; web server
+                 [aleph "0.4.1"]
+                 [ring "1.5.0"]
+                 [ring/ring-defaults "0.2.1"]
+
+                 [compojure "1.5.1"]
                  [clj-time "0.12.0"]
                  [cheshire "5.6.3"]
                  [byte-streams "0.2.2"]
-                 [twitter-api "0.7.8"]
-                 [compojure "1.5.1"]
-                 [com.soundcloud/prometheus-clj "2.4.0"]]
+
+                 ;; metrics
+                 [com.soundcloud/prometheus-clj "2.4.0"]
+
+                 ;; front-back communication
+                 [com.taoensso/sente "1.10.0"]
+                 [com.taoensso/timbre "4.5.1"]
+
+                 ;; frontend
+                 [org.clojure/clojurescript "1.8.51"]
+                 [reagent "0.6.0-rc"]]
   :plugins [[lein-auto "0.1.2"]
             [lein-cljfmt "0.3.0"]
             [lein-environ "1.0.3"]
@@ -23,10 +36,30 @@
             [lein-environ "1.0.2"]
             [lein-ancient "0.6.10"]
             [jonase/eastwood "0.2.3"]
-            [lein-cloverage "1.0.7-SNAPSHOT"]]
+            [lein-cloverage "1.0.7-SNAPSHOT"]
+
+            ;; frontend
+            [lein-figwheel "0.5.6"]]
+  :cljsbuild {:builds {:app {:source-paths ["src/"]
+                             :compiler {:output-to "resources/public/js/app.js"
+                                        :output-dir "resources/public/js/out"
+                                        :asset-path "js/out"
+                                        :optimizations :none
+                                        :pretty-print  true}}}}
+
+  :figwheel {:http-server-root "public"
+             :server-port 3449
+             :nrepl-port 7002
+             :css-dirs ["resources/public/css"]
+             :ring-handler firedamp.core/wrapped-app}
+
   :cljfmt {:indents {let-flow [[:inner 0]]
                      catch [[:inner 0]]}}
   :main ^:skip-aot firedamp.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}
-             :dev {:env {:port 8080}}})
+             :dev {:dependencies [[com.cemerick/piggieback "0.2.1"]
+                                  [org.clojure/tools.nrepl "0.2.10"]]
+                   :repl-options {:nrepl-middleware
+                                  [cemerick.piggieback/wrap-cljs-repl]}
+                   :env {:port 8080}}})
