@@ -18,6 +18,7 @@
                  [clj-time "0.12.0"]
                  [cheshire "5.6.3"]
                  [byte-streams "0.2.2"]
+                 [hiccup "1.0.5"]
 
                  ;; metrics
                  [com.soundcloud/prometheus-clj "2.4.0"]
@@ -39,8 +40,10 @@
             [lein-cloverage "1.0.7-SNAPSHOT"]
 
             ;; frontend
-            [lein-figwheel "0.5.6"]]
-  :cljsbuild {:builds {:app {:source-paths ["src/"]
+            [lein-figwheel "0.5.6"]
+            [lein-cljsbuild "1.1.4"]]
+  :cljsbuild {:builds {:app {:id "firedamp"
+                             :source-paths ["src/"]
                              :compiler {:output-to "resources/public/js/app.js"
                                         :output-dir "resources/public/js/out"
                                         :asset-path "js/out"
@@ -50,8 +53,7 @@
   :figwheel {:http-server-root "public"
              :server-port 3449
              :nrepl-port 7002
-             :css-dirs ["resources/public/css"]
-             :ring-handler firedamp.core/wrapped-app}
+             :css-dirs ["resources/public/css"]}
 
   :cljfmt {:indents {let-flow [[:inner 0]]
                      catch [[:inner 0]]}}

@@ -1,6 +1,7 @@
 (ns firedamp.frontend
   (:require
    [cljs.core.async :as async :refer [<! >! put! chan]]
+   [taoensso.timbre :as timbre]
    [taoensso.sente :as sente :refer [cb-success?]]
    [reagent.core :as reagent])
   (:require-macros
@@ -8,19 +9,15 @@
 
 (def state (reagent/atom {}))
 
-
-;; stupid simple views
 (defn status-view
-  [data]
+  []
   [:div
-   [:h2 "Current Status"
-    [data]]])
-
+   [:h2 "Current Status"]])
 
 (let [{:keys [chsk ch-recv send-fn state]}
       (sente/make-channel-socket! "/chsk" {:type :auto})]
   (def chsk chsk)
-  (def ch-chsk    ch-recv)
+  (def ch-chsk ch-recv)
   (def chsk-send! send-fn)
   (def chsk-state state))
 

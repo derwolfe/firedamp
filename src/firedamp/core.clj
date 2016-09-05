@@ -11,10 +11,12 @@
    [clojure.core.match :as cmatch]
    [clojure.core.reducers :as r]
    [environ.core :refer [env]]
+   [hiccup.page :refer [html5 include-js include-css]]
    [manifold.deferred :as md]
    [manifold.time :as mt]
-   [ring.middleware.params :as rmp]
-   [ring.middleware.keyword-params :as rmkp]
+   [ring.middleware.params :refer [wrap-params]]
+   [ring.middleware.keyword-params :refer [wrap-keyword-params]]
+   [ring.middleware.resource :refer [wrap-resource]]
    [taoensso.timbre :as timbre]
    [taoensso.sente :as sente]
    [taoensso.sente.server-adapters.aleph :refer [get-sch-adapter]]
@@ -161,6 +163,20 @@
 
 (def built-in-formatter (time-format/formatters :basic-date-time))
 
+;; main page
+(def home-page
+  (html5
+   [:html
+    [:head
+     [:title "Firedamp"]
+     [:meta {:charset "utf-8"}]
+     [:meta {:name "viewport"
+             :content "width=device-width, initial-scale=1"}]]
+    [:body
+     [:div#app]
+     (include-js "/js/out/goog/base.js")
+     (include-js "/js/app.js")]]))
+
 (defn status-handler
   [_req]
   (let [{:keys [statuses last-update alarm-state]} @state
@@ -168,7 +184,11 @@
               :alarm-state alarm-state
               :last-update (time-coerce/to-date last-update)}
         as-json (json/generate-string body {:pretty true})]
-    (prometheus/increase-counter @store "firedamp" "inbound_requests" ["/" "GET"] 1.0)
+    (prometheus/increase-counter
+     @store "firedamp"
+     "inbound_requests"
+     ["/" "GET"]
+     1.0)
     {:status 200
      :headers {"content-type" "application/json"}
      :body as-json}))
@@ -178,26 +198,30 @@
       (sente/make-channel-socket! (get-sch-adapter) {})]
   (def ring-ajax-post ajax-post-fn)
   (def ring-ajax-get-or-ws-handshake ajax-get-or-ws-handshake-fn)
-  (def ch-chsk ch-recv) ; ChannelSocket's receive channel
-  (def chsk-send! send-fn) ; ChannelSocket's send API fn
+  (def ch-chsk ch-recv)
+  (def chsk-send! send-fn)
   (def connected-uids connected-uids))
 
-(cjc/defroutes app
-  (cjc/GET "/" [] status-handler)
+(cjc/defroutes routes
+  (cjc/GET "/status" [] status-handler)
   (cjc/GET "/metrics" [] metrics-handler)
+
+  (cjc/GET "/" [] home-page)
+  (cjr/resources "/")
+
   (cjc/GET "/chsk" req (ring-ajax-get-or-ws-handshake req))
   (cjc/POST "/chsk" req (ring-ajax-post req))
   (cjr/not-found "404: Not Found"))
 
-(def wrapped-app
-  (-> app
-      rmkp/wrap-keyword-params
-      rmp/wrap-params))
+(def app
+  (-> routes
+      wrap-keyword-params
+      wrap-params))
 
 (defn -main
   [& args]
   (let [port (Integer/parseInt (:port env))]
     (init-metrics!)
-    (http/start-server wrapped-app {:port port :host "0.0.0.0"})
+    (http/start-server app {:port port :host "0.0.0.0"})
     (keep-checking (mt/minutes 2))
     (staying-alive)))
