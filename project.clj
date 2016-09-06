@@ -29,7 +29,9 @@
 
                  ;; frontend
                  [org.clojure/clojurescript "1.8.51"]
-                 [reagent "0.6.0-rc"]]
+                 [reagent "0.6.0-rc"]
+                 [com.andrewmcveigh/cljs-time "0.4.0"]
+                 ]
   :plugins [[lein-auto "0.1.2"]
             [lein-cljfmt "0.3.0"]
             [lein-environ "1.0.3"]
@@ -38,23 +40,14 @@
             [lein-ancient "0.6.10"]
             [jonase/eastwood "0.2.3"]
             [lein-cloverage "1.0.7-SNAPSHOT"]
-
-            ;; frontend
-            [lein-figwheel "0.5.6"]
             [lein-cljsbuild "1.1.4"]]
-  :cljsbuild {:builds {:app {:id "firedamp"
+  :cljsbuild {:builds {:app {:id "app"
                              :source-paths ["src/"]
                              :compiler {:output-to "resources/public/js/app.js"
                                         :output-dir "resources/public/js/out"
                                         :asset-path "js/out"
-                                        :optimizations :none
-                                        :pretty-print  true}}}}
-
-  :figwheel {:http-server-root "public"
-             :server-port 3449
-             :nrepl-port 7002
-             :css-dirs ["resources/public/css"]}
-
+                                        :optimizations :advanced
+                                        :pretty-print true}}}}
   :cljfmt {:indents {let-flow [[:inner 0]]
                      catch [[:inner 0]]}}
   :main ^:skip-aot firedamp.core

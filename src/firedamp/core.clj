@@ -174,8 +174,8 @@
              :content "width=device-width, initial-scale=1"}]]
     [:body
      [:div#app]
-     (include-js "/js/out/goog/base.js")
-     (include-js "/js/app.js")]]))
+     (include-js "/js/app.js")
+     [:script "firedamp.frontend.run()"]]]))
 
 (defn status-handler
   [_req]
