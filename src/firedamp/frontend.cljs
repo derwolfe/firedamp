@@ -23,13 +23,13 @@
      [:p "Last updated at:" (str last-update)]
      [:ul
       (for [[k v] statuses]
-        ^{:key k} [:li (str k) (str v)])]]))
+        ^{:key k} [:li (str k) " - " v])]]))
 
 (defn app
-  []
+  [state]
   [:div
    [header]
-   [status-view app-state]])
+   [status-view state]])
 
 (defn ^:export run []
-  (r/render-component [app] (.getElementById js/document "app")))
+  (r/render-component [app app-state] (.getElementById js/document "app")))
