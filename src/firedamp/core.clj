@@ -18,8 +18,6 @@
    [ring.middleware.keyword-params :refer [wrap-keyword-params]]
    [ring.middleware.resource :refer [wrap-resource]]
    [taoensso.timbre :as timbre]
-   [taoensso.sente :as sente]
-   [taoensso.sente.server-adapters.aleph :refer [get-sch-adapter]]
    [prometheus.core :as prometheus])
   (:import
    [java.util.concurrent TimeoutException])
@@ -193,24 +191,13 @@
      :headers {"content-type" "application/json"}
      :body as-json}))
 
-(let [{:keys [ch-recv send-fn connected-uids
-              ajax-post-fn ajax-get-or-ws-handshake-fn]}
-      (sente/make-channel-socket! (get-sch-adapter) {})]
-  (def ring-ajax-post ajax-post-fn)
-  (def ring-ajax-get-or-ws-handshake ajax-get-or-ws-handshake-fn)
-  (def ch-chsk ch-recv)
-  (def chsk-send! send-fn)
-  (def connected-uids connected-uids))
 
 (cjc/defroutes routes
   (cjc/GET "/status" [] status-handler)
   (cjc/GET "/metrics" [] metrics-handler)
 
   (cjc/GET "/" [] home-page)
-  (cjr/resources "/")
 
-  (cjc/GET "/chsk" req (ring-ajax-get-or-ws-handshake req))
-  (cjc/POST "/chsk" req (ring-ajax-post req))
   (cjr/not-found "404: Not Found"))
 
 (def app

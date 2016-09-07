@@ -31,7 +31,7 @@
                  [org.clojure/clojurescript "1.8.51"]
                  [reagent "0.6.0-rc"]
                  [com.andrewmcveigh/cljs-time "0.4.0"]
-                 ]
+                 [cljs-ajax "0.5.8"]]
   :plugins [[lein-auto "0.1.2"]
             [lein-cljfmt "0.3.0"]
             [lein-environ "1.0.3"]

@@ -1,8 +1,9 @@
 (ns firedamp.frontend
   (:require
-   [taoensso.timbre :as timbre]
+   [ajax.core :refer [GET]]
    [cljs-time.core :as time]
    [cljs-time.format :as format]
+   [taoensso.timbre :as timbre]
    [reagent.core :as r]))
 
 ;; the state atom, use it, and _only_ it
@@ -29,6 +30,12 @@
 (defn app
   [state]
   [status-view state])
+
+(defn get-data []
+  (GET "/status" {:response-format :json
+                  :handler #(reset! app-state %)
+                  :error-handler nil
+                  :keywords? true}))
 
 (defn ^:export run []
   (r/render-component [app app-state] (.getElementById js/document "app")))
