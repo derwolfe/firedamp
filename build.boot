@@ -17,13 +17,10 @@
                  [com.soundcloud/prometheus-clj "2.4.0"]
 
                  ;; tests
-                 ;; [adzerk/boot-test "1.1.0" :scope "test"]
-                 [metosin/boot-alt-test "0.3.2" :scope "test"]
-                 ;;[clojure/tools.namespace "0.3.0-alpha3" :scope "test"]
+                 [adzerk/boot-test "1.1.0" :scope "test"]
                  ])
 
-;;(require '[adzerk.boot-test :refer :all])
-(require '[metosin.boot-alt-test :refer :all])
+(require '[adzerk.boot-test :refer :all])
 
 (task-options!
  pom {:project (get-env :project)
@@ -34,8 +31,7 @@
  jar {:main 'firedamp.core
       :manifest {"Description" "Bot that reports that status of Github, Codecov, and Travis APIs"
                  "Url" "https://github.com/derwolfe/firedamp.git"}}
- repl {:init-ns 'firedamp.core
-       :skip-init true})
+ repl {:init-ns 'firedamp.core})
 
 (deftask build
   []
